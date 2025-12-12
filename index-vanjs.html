@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skeleton UI - VanJS</title>
+  <style>
+    :root {
+      --surface-base: #0f172a;
+      --surface-raised: #111827;
+      --text-primary: #f8fafc;
+      --text-muted: #cbd5e1;
+      --accent: #7c3aed;
+      --accent-2: #22d3ee;
+      --radius-sharp: 4px;
+      --radius-soft: 14px;
+      --radius-pill: 999px;
+      --shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+      --font-body: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-code: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      background-color: var(--surface-base);
+      color: var(--text-primary);
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: var(--font-body);
+      background: radial-gradient(circle at top left, #111827, #0b1224 60%, #020617 100%);
+      color: var(--text-primary);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      margin: 0 0 16px;
+      color: var(--text-muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(17, 24, 39, 0.75));
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      border-radius: var(--radius-soft);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px 10px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(148, 163, 184, 0.08);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .tab.active {
+      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      color: #0b1224;
+      box-shadow: 0 0 14px rgba(124, 58, 237, 0.5);
+      border-color: transparent;
+    }
+
+    .toggle-row,
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 8px 0;
+    }
+
+    .pill-toggle {
+      position: relative;
+      width: 52px;
+      height: 28px;
+      border-radius: var(--radius-pill);
+      background: rgba(148, 163, 184, 0.2);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .pill-toggle .thumb {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--text-primary);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .pill-toggle.on {
+      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      border-color: transparent;
+    }
+
+    .pill-toggle.on .thumb {
+      transform: translateX(24px);
+      background: #0b1224;
+    }
+
+    .radio-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(148, 163, 184, 0.12);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    code {
+      font-family: var(--font-code);
+    }
+  </style>
+</head>
+<body>
+  <h1>VanJS Skeleton</h1>
+  <p>Zero-build dashboard layout with tabs, toggles, radios, and fidget-like controls powered by VanJS.</p>
+  <div id="app" class="grid"></div>
+
+  <script type="module">
+    import van from "https://cdn.jsdelivr.net/npm/vanjs@1.4.2/van.min.js";
+
+    const { div, h2, p, button, span, label, input, section, strong } = van.tags;
+
+    const tab = van.state("Overview");
+    const isArmed = van.state(false);
+    const radius = van.state("soft");
+
+    const Toggle = () =>
+      div(
+        { class: "toggle-row" },
+        span("Power"),
+        div(
+          {
+            class: () => `pill-toggle ${isArmed.val ? "on" : ""}`,
+            role: "switch",
+            "aria-checked": () => String(isArmed.val),
+            onclick: () => (isArmed.val = !isArmed.val),
+          },
+          div({ class: "thumb" })
+        )
+      );
+
+    const Tabs = () =>
+      div(
+        { class: "tabs" },
+        ["Overview", "Fidget", "Telemetry"].map((name) =>
+          div(
+            {
+              class: () => `tab ${tab.val === name ? "active" : ""}`,
+              onclick: () => (tab.val = name),
+            },
+            name
+          )
+        )
+      );
+
+    const Radios = () =>
+      div(
+        { class: "radio-row" },
+        [
+          { key: "sharp", label: "Sharp radius" },
+          { key: "soft", label: "Soft radius" },
+          { key: "pill", label: "Pill" },
+        ].map((opt) =>
+          label(
+            { class: "badge" },
+            input({
+              type: "radio",
+              name: "radius",
+              value: opt.key,
+              checked: () => radius.val === opt.key,
+              onchange: () => (radius.val = opt.key),
+            }),
+            opt.label
+          )
+        )
+      );
+
+    const Panel = (title, content) =>
+      section({ class: "card" }, h2(title), content);
+
+    const Cards = () =>
+      [
+        Panel("Mode", div(Tabs(), p(() => `Active tab: ${tab.val}`))),
+        Panel("Controls", div(Toggle(), Radios())),
+        Panel(
+          "Tokens",
+          div(
+            { class: "control-row" },
+            span("Visibility"),
+            span({ class: "badge" }, "Objects on surfaces remain visible")
+          ),
+          p(
+            "Tokens flow through CSS variables; tweak radii to feel sharper or softer without touching the DOM."
+          ),
+          p(
+            strong("Fallbacks: "),
+            "heading → body, logo → heading, code → monospace."
+          )
+        ),
+      ];
+
+    van.add(document.getElementById("app"), Cards());
+  </script>
+</body>
+</html>

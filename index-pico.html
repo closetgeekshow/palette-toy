@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pico.css Skeleton</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+  <style>
+    :root {
+      --card-radius: 14px;
+      --accent: #7dd3fc;
+    }
+
+    body {
+      background: radial-gradient(circle at 12% -20%, #1f2937, #0b1220);
+    }
+
+    main.container {
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+    }
+
+    .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    article {
+      border-radius: var(--card-radius);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .chip-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 0.35rem 0.7rem;
+      background: rgba(148, 163, 184, 0.08);
+      color: white;
+      cursor: pointer;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+
+    .chip.is-on {
+      transform: translateY(-1px);
+      box-shadow: 0 0 0 1px var(--accent), 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    progress {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <hgroup>
+        <h1>Pico.css skeleton</h1>
+        <p>Uses Pico tokens for typography and spacing; minimal custom CSS only shapes panels and accents.</p>
+      </hgroup>
+      <p><mark>CDN only</mark></p>
+    </header>
+
+    <div class="grid">
+      <article>
+        <header>
+          <h3>Surface visibility</h3>
+          <small>Base + panel contrast stays strong.</small>
+        </header>
+        <progress value="72" max="100"></progress>
+        <p>Surface gradient and border reinforce contrast so objects remain visible on every layer.</p>
+      </article>
+
+      <article>
+        <header>
+          <h3>Accents</h3>
+          <small>Pick a hue to repaint the glow.</small>
+        </header>
+        <div class="chip-row" id="pico-accents">
+          <button class="chip is-on" data-accent="#7dd3fc">Sky</button>
+          <button class="chip" data-accent="#a78bfa">Lavender</button>
+          <button class="chip" data-accent="#34d399">Mint</button>
+        </div>
+        <p style="color: rgba(226, 232, 240, 0.78);">Accents only touch borders and shadows; typography and spacing are straight from Pico.</p>
+      </article>
+
+      <article>
+        <header>
+          <h3>Radius</h3>
+          <small>Sharpen or soften components.</small>
+        </header>
+        <label for="radius">Corner radius</label>
+        <input type="range" id="radius" name="radius" min="6" max="22" value="14" />
+        <p>Slide to explore sharper tokens; panels and chips respond together.</p>
+      </article>
+    </div>
+  </main>
+
+  <script>
+    const accentRow = document.getElementById("pico-accents");
+    accentRow.addEventListener("click", (event) => {
+      const chip = event.target.closest("button[data-accent]");
+      if (!chip) return;
+      accentRow.querySelectorAll(".chip").forEach((c) => c.classList.remove("is-on"));
+      chip.classList.add("is-on");
+      document.documentElement.style.setProperty("--accent", chip.dataset.accent);
+    });
+
+    const radiusInput = document.getElementById("radius");
+    radiusInput.addEventListener("input", (event) => {
+      const value = event.target.value;
+      document.documentElement.style.setProperty("--card-radius", `${value}px`);
+      document.querySelectorAll("article").forEach((card) => (card.style.borderRadius = `${value}px`));
+    });
+  </script>
+</body>
+</html>

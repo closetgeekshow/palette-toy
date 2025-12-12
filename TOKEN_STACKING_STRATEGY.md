@@ -1,0 +1,3 @@
+# Token Stacking Strategy
+
+Start with **Open Props** for breadth: grab spacing, typography, easing, and radius primitives directly from the CDN, aliasing them into your own `--token-*` names. Layer **Radix Colors** when you need precise ramps or accessibility-tuned contrast; import only the hue files you use and map swatches into your accent/surface roles. Serialize the merged set into **DTCG JSON** (Design Tokens Community Group) so tools and LLMs can reason over required/optional keys, defaults, and derived mappings without parsing CSS. Keep the JSON normalized and reference it from each HTML demo to drive prompts, docs, and previews.

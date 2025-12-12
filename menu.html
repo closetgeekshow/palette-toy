@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Palette Toy Demos</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 10% -20%, #1e293b, #020617);
+      color: #e5e7eb;
+      min-height: 100vh;
+      margin: 0;
+      padding: 48px;
+      display: grid;
+      gap: 24px;
+    }
+
+    h1 { margin: 0; letter-spacing: 0.1em; text-transform: uppercase; font-size: 1.2rem; }
+    p { margin: 0; color: #cbd5e1; }
+
+    ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+
+    a {
+      color: #38bdf8;
+      text-decoration: none;
+      background: rgba(30, 41, 59, 0.7);
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      display: block;
+      transition: transform 120ms ease, background 120ms ease;
+    }
+
+    a:hover { background: rgba(56, 189, 248, 0.12); transform: translateY(-2px); }
+
+    table { width: 100%; border-collapse: collapse; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 14px; overflow: hidden; }
+    th, td { padding: 10px 12px; text-align: left; }
+    th { background: rgba(56, 189, 248, 0.08); }
+    tr + tr td { border-top: 1px solid rgba(148, 163, 184, 0.3); }
+    .muted { color: #cbd5e1; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Palette Toy HTML demos</h1>
+    <p>All demo variants stay CDN-only and build-free.</p>
+  </header>
+
+  <ul>
+    <li><a href="index.html">Core editor + skeleton UI</a></li>
+    <li><a href="index-doodle.html">CSS Variable doodling lab</a></li>
+    <li><a href="index-vanjs.html">VanJS variant</a></li>
+    <li><a href="index-mithril.html">Mithril variant</a></li>
+    <li><a href="index-htm-preact.html">HTM + Preact variant</a></li>
+    <li><a href="index-lit-html.html">lit-html variant</a></li>
+    <li><a href="index-open-props.html">Open Props token bridge</a></li>
+    <li><a href="index-pico.html">Pico.css demo</a></li>
+    <li><a href="index-newcss.html">new.css demo</a></li>
+    <li><a href="index-water.html">water.css demo</a></li>
+    <li><a href="index-shoelace.html">Shoelace theme demo</a></li>
+    <li><a href="index-radix-colors.html">Radix Colors demo</a></li>
+  </ul>
+
+  <section>
+    <h2>Size comparison (vs. index.html)</h2>
+    <table>
+      <thead>
+        <tr><th>File</th><th>Lines</th><th>Change vs index.html</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>index.html (baseline)</td><td>2093</td><td class="muted">—</td></tr>
+        <tr><td>index-doodle.html</td><td>361</td><td>-82.8%</td></tr>
+        <tr><td>index-vanjs.html</td><td>240</td><td>-88.5%</td></tr>
+        <tr><td>index-mithril.html</td><td>212</td><td>-89.9%</td></tr>
+        <tr><td>index-open-props.html</td><td>200</td><td>-90.4%</td></tr>
+        <tr><td>index-htm-preact.html</td><td>158</td><td>-92.5%</td></tr>
+        <tr><td>index-lit-html.html</td><td>159</td><td>-92.4%</td></tr>
+        <tr><td>index-radix-colors.html</td><td>138</td><td>-93.4%</td></tr>
+        <tr><td>index-pico.html</td><td>125</td><td>-94.0%</td></tr>
+        <tr><td>index-newcss.html</td><td>111</td><td>-94.7%</td></tr>
+        <tr><td>index-water.html</td><td>111</td><td>-94.7%</td></tr>
+        <tr><td>index-shoelace.html</td><td>104</td><td>-95.0%</td></tr>
+      </tbody>
+    </table>
+  </section>
+</body>
+</html>
