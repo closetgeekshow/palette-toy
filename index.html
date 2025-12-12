@@ -1,1 +1,1748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Palette Token Demo with URL-Encoded Editor</title>
+  <style>
+    /* ------------------------------------------
+       1. Base token namespace (fallbacks)
+       ------------------------------------------ */
+    :root {
+      /* Core surfaces (theme-overridable) */
+      --surface-base: #0b1120;
+      --surface-raised: #111827;
+      --surface-highest: #1f2937;
+
+      /* Core borders (theme-overridable) */
+      --border-subtle: #1f2933;
+      --border-strong: #4b5563;
+      --border-highlight: #f5d97a;
+
+      /* Core text (theme-overridable) */
+      --text-primary: #f9fafb;
+      --text-muted: #9ca3af;
+      --text-inverted: #020617;
+
+      /* Accents (theme-overridable) */
+      --accent-primary: #22d3ee;
+      --accent-secondary: #38bdf8;
+      --accent-tertiary: #a3d8ff;
+      --accent-success: #4ade80;
+      --accent-warning: #facc15;
+      --accent-danger: #f97373;
+
+      /* Radius tokens (theme-overridable) */
+      --radius-xs: 2px;
+      --radius-s: 6px;
+      --radius-m: 10px;
+      --radius-l: 16px;
+      --radius-pill: 999px;
+
+      /* Spacing scale */
+      --space-0-5: 2px;
+      --space-1: 4px;
+      --space-1-5: 6px;
+      --space-2: 8px;
+      --space-2-5: 10px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+
+      /* Shadows */
+      --shadow-elevation: 0 20px 40px rgba(0, 0, 0, 0.45);
+      --shadow-glow-accent: 0 0 16px rgba(56, 189, 248, 0.55);
+      --shadow-glow-dot: 0 0 8px rgba(148, 163, 184, 0.6);
+      --shadow-glow-meter: 0 0 12px rgba(255, 255, 255, 0.3);
+
+      /* Fonts */
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+
+      /* Page + editor aliases */
+      --page-bg: #020617;
+      --page-bg-alt: #000000;
+      --page-text: #e5e7eb;
+      --page-text-muted: #9ca3af;
+
+      --editor-bg: radial-gradient(
+        circle at top,
+        var(--surface-raised) 0,
+        var(--surface-base) 60%,
+        var(--page-bg-alt) 100%
+      );
+      --editor-border: rgba(148, 163, 184, 0.4);
+      --editor-button-bg: rgba(15, 23, 42, 0.8);
+      --editor-button-border: rgba(148, 163, 184, 0.7);
+      --editor-button-hover-bg: rgba(30, 64, 175, 0.9);
+      --editor-text: var(--page-text);
+      --editor-text-muted: var(--page-text-muted);
+      --editor-textarea-bg: rgba(15, 23, 42, 0.9);
+      --editor-textarea-border: rgba(148, 163, 184, 0.5);
+      --editor-error-text: #fca5a5;
+
+      --panel-border: rgba(148, 163, 184, 0.3);
+      --meter-bg: rgba(15, 23, 42, 0.7);
+      --meter-border: rgba(148, 163, 184, 0.4);
+    }
+
+    /* ------------------------------------------
+       2. Layout & component styling using tokens
+       ------------------------------------------ */
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: var(--space-6);
+      background: var(--page-bg);
+      color: var(--page-text);
+      font-family: var(--font-sans);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      min-height: 100vh;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0 0 var(--space-2);
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .page-title {
+      margin-bottom: var(--space-1);
+    }
+
+    .page-intro {
+      margin: 0 0 var(--space-3);
+      color: var(--page-text-muted);
+      max-width: 60rem;
+      font-size: 0.95rem;
+    }
+
+    /* Token editor UI */
+    .token-editor {
+      border-radius: var(--radius-m);
+      border: 1px solid var(--editor-border);
+      background: var(--editor-bg);
+      padding: var(--space-2) var(--space-3);
+      font-size: 0.85rem;
+    }
+
+    .token-editor > summary {
+      cursor: pointer;
+      list-style: none;
+      outline: none;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--editor-text);
+    }
+
+    .token-editor > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .token-editor summary::before {
+      content: "▶";
+      display: inline-block;
+      margin-right: var(--space-1);
+      font-size: 0.6rem;
+      transition: transform 0.15s ease-out;
+    }
+
+    .token-editor[open] summary::before {
+      transform: rotate(90deg);
+    }
+
+    .token-editor-body {
+      margin-top: var(--space-2);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .token-editor-buttons {
+      display: flex;
+      gap: var(--space-2);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .token-editor-buttons button {
+      border-radius: var(--radius-pill);
+      padding: var(--space-1) var(--space-3);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      border: 1px solid var(--editor-button-border);
+      background: var(--editor-button-bg);
+      color: var(--editor-text);
+      cursor: pointer;
+    }
+
+    .token-editor-buttons button:hover {
+      background: var(--editor-button-hover-bg);
+    }
+
+    .token-editor-hint {
+      font-size: 0.7rem;
+      color: var(--editor-text-muted);
+    }
+
+    .token-editor textarea {
+      width: 100%;
+      min-height: 200px;
+      resize: vertical;
+      border-radius: var(--radius-s);
+      border: 1px solid var(--editor-textarea-border);
+      background: var(--editor-textarea-bg);
+      color: var(--editor-text);
+      padding: var(--space-2);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.4;
+      outline: none;
+    }
+
+    .token-editor--error textarea {
+      border-color: var(--accent-danger);
+    }
+
+    .token-editor-error-text {
+      font-size: 0.7rem;
+      color: var(--editor-error-text);
+      display: none;
+    }
+
+    .token-editor--error .token-editor-error-text {
+      display: block;
+    }
+
+    .themes-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-6);
+    }
+
+    @media (min-width: 1000px) {
+      .themes-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    .theme-panel {
+      background: radial-gradient(
+        circle at top,
+        var(--surface-highest, #1f2937) 0,
+        var(--surface-base, #020617) 60%,
+        var(--page-bg-alt) 100%
+      );
+      padding: var(--space-4);
+      border-radius: var(--radius-l);
+      border: 1px solid var(--panel-border);
+      box-shadow: var(--shadow-elevation);
+    }
+
+    .theme-panel-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: var(--space-3);
+      gap: var(--space-2);
+    }
+
+    .theme-name {
+      font-size: 1.05rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      opacity: 0.85;
+    }
+
+    .theme-tag {
+      font-size: 0.7rem;
+      padding: var(--space-0-5) var(--space-2);
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--editor-button-border);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--page-text);
+      opacity: 0.9;
+      white-space: nowrap;
+    }
+
+    .theme-shell {
+      border-radius: var(--radius-m);
+      background: var(--surface-base);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-elevation);
+      overflow-x: auto;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      min-height: 320px;
+      max-width: 100%;
+    }
+
+    .sidebar {
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-raised) 80%, var(--page-bg-alt) 20%),
+        var(--surface-base)
+      );
+      padding: var(--space-4);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      min-width: 0;
+    }
+
+    .sidebar-logo {
+      font-size: 0.9rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .sidebar-logo span {
+      display: block;
+      font-size: 0.75rem;
+      opacity: 0.8;
+    }
+
+    .sidebar-nav {
+      display: grid;
+      gap: var(--space-1);
+    }
+
+    .nav-item {
+      font-size: 0.8rem;
+      padding: var(--space-1-5) var(--space-2-5);
+      border-radius: var(--radius-s);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid transparent;
+      min-width: 0;
+    }
+
+    .nav-item.is-active {
+      background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--accent-primary) 35%, transparent),
+        transparent
+      );
+      border-color: color-mix(
+        in srgb,
+        var(--accent-primary) 60%,
+        var(--border-subtle)
+      );
+      color: var(--text-primary);
+    }
+
+    .nav-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: var(--radius-pill);
+      background: var(--accent-secondary);
+      box-shadow: var(--shadow-glow-dot);
+      flex-shrink: 0;
+    }
+
+    .sidebar-meta {
+      margin-top: auto;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      border-top: 1px solid
+        color-mix(in srgb, var(--border-subtle) 60%, transparent);
+      padding-top: var(--space-3);
+    }
+
+    .sidebar-meter {
+      margin-top: var(--space-2);
+      height: 6px;
+      border-radius: var(--radius-pill);
+      background: var(--meter-bg);
+      overflow: hidden;
+      border: 1px solid var(--meter-border);
+    }
+
+    .sidebar-meter-fill {
+      height: 100%;
+      width: 60%;
+      background: linear-gradient(
+        90deg,
+        var(--accent-success),
+        var(--accent-primary),
+        var(--accent-warning)
+      );
+      box-shadow: var(--shadow-glow-meter);
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(
+        circle at top left,
+        color-mix(in srgb, var(--surface-highest) 80%, var(--page-bg-alt) 20%),
+        var(--surface-base)
+      );
+      min-width: 0;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--border-subtle);
+      background: color-mix(in srgb, var(--surface-raised) 80%, transparent);
+      backdrop-filter: blur(12px);
+      gap: var(--space-2);
+    }
+
+    .topbar-title {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border-radius: var(--radius-pill);
+      padding: var(--space-1-5) var(--space-4);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      border: 1px solid var(--border-strong);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(
+        130deg,
+        var(--accent-primary),
+        color-mix(in srgb, var(--accent-secondary) 60%, var(--accent-primary) 40%)
+      );
+      color: var(--text-inverted);
+      border-color: color-mix(
+        in srgb,
+        var(--accent-primary) 70%,
+        var(--border-strong)
+      );
+      box-shadow: var(--shadow-glow-accent);
+    }
+
+    .content {
+      padding: var(--space-4);
+      display: grid;
+      grid-template-rows: auto auto auto;
+      gap: var(--space-3);
+      min-width: 0;
+    }
+
+    .cards-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-3);
+      min-width: 0;
+    }
+
+    .card {
+      background: color-mix(in srgb, var(--surface-raised) 85%, var(--page-bg-alt) 15%);
+      border-radius: var(--radius-m);
+      border: 1px solid var(--border-subtle);
+      padding: var(--space-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      min-width: 0;
+    }
+
+    .card-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .stat-value {
+      font-size: 1.4rem;
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+    }
+
+    .stat-pill-row {
+      display: flex;
+      gap: var(--space-1);
+      flex-wrap: wrap;
+      margin-top: auto;
+    }
+
+    .pill,
+    .badge {
+      border-radius: var(--radius-pill);
+      font-size: 0.7rem;
+      padding: var(--space-0-5) var(--space-2);
+    }
+
+    .pill {
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+    }
+
+    .badge {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      border: 1px solid transparent;
+    }
+
+    .pill--primary {
+      background: color-mix(in srgb, var(--accent-primary) 20%, transparent);
+      border-color: color-mix(
+        in srgb,
+        var(--accent-primary) 70%,
+        var(--border-subtle)
+      );
+      color: var(--text-primary);
+    }
+
+    .pill--success {
+      background: color-mix(in srgb, var(--accent-success) 20%, transparent);
+      border-color: color-mix(
+        in srgb,
+        var(--accent-success) 70%,
+        var(--border-subtle)
+      );
+      color: var(--text-primary);
+    }
+
+    .pill--warning {
+      background: color-mix(in srgb, var(--accent-warning) 15%, transparent);
+      border-color: color-mix(
+        in srgb,
+        var(--accent-warning) 70%,
+        var(--border-subtle)
+      );
+      color: var(--text-primary);
+    }
+
+    .table-section {
+      background: color-mix(in srgb, var(--surface-raised) 90%, var(--page-bg-alt) 10%);
+      border-radius: var(--radius-m);
+      border: 1px solid var(--border-subtle);
+      padding: var(--space-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      min-width: 0;
+    }
+
+    .table-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .table-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+    }
+
+    .table-legend {
+      display: flex;
+      gap: var(--space-2);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .legend-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1-5);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: var(--radius-pill);
+    }
+
+    .legend-dot--ok {
+      background: var(--accent-success);
+    }
+
+    .legend-dot--warn {
+      background: var(--accent-warning);
+    }
+
+    .legend-dot--err {
+      background: var(--accent-danger);
+    }
+
+    .table-scroll {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .fake-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+      min-width: 480px;
+    }
+
+    .fake-table th,
+    .fake-table td {
+      padding: var(--space-1-5) var(--space-2);
+      text-align: left;
+    }
+
+    .fake-table thead th {
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.65rem;
+    }
+
+    .fake-table tbody tr:nth-child(odd) {
+      background: color-mix(in srgb, var(--surface-highest) 70%, transparent);
+    }
+
+    .fake-table tbody tr:nth-child(even) {
+      background: color-mix(in srgb, var(--surface-raised) 60%, transparent);
+    }
+
+    .badge--ok {
+      background: color-mix(in srgb, var(--accent-success) 25%, transparent);
+      border-color: color-mix(
+        in srgb,
+        var(--accent-success) 70%,
+        var(--border-subtle)
+      );
+      color: var(--text-primary);
+    }
+
+    .badge--warn {
+      background: color-mix(in srgb, var(--accent-warning) 20%, transparent);
+      border-color: color-mix(
+        in srgb,
+        var(--accent-warning) 70%,
+        var(--border-subtle)
+      );
+      color: var(--text-primary);
+    }
+
+    .badge--err {
+      background: color-mix(in srgb, var(--accent-danger) 25%, transparent);
+      border-color: color-mix(
+        in srgb,
+        var(--accent-danger) 70%,
+        var(--border-subtle)
+      );
+      color: var(--text-primary);
+    }
+
+    .mono-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      opacity: 0.7;
+      white-space: nowrap;
+    }
+
+    /* ------------------------------------------
+       3. Interaction playground (tabs, toggles, chips)
+       ------------------------------------------ */
+
+    .playground {
+      background: color-mix(in srgb, var(--surface-raised) 92%, var(--page-bg-alt) 8%);
+      border-radius: var(--radius-m);
+      border: 1px solid var(--border-subtle);
+      padding: var(--space-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      min-width: 0;
+    }
+
+    .playground-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .playground-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .playground-tabs {
+      display: flex;
+      gap: var(--space-1);
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+      padding: var(--space-1) var(--space-2);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .tab.is-active {
+      background: color-mix(in srgb, var(--accent-primary) 18%, transparent);
+      border-color: color-mix(
+        in srgb,
+        var(--accent-primary) 60%,
+        var(--border-subtle)
+      );
+      color: var(--text-primary);
+    }
+
+    .playground-body {
+      display: grid;
+      gap: var(--space-2);
+      margin-top: var(--space-2);
+    }
+
+    .tab-panel {
+      display: none;
+      gap: var(--space-2);
+    }
+
+    .tab-panel.is-active {
+      display: grid;
+    }
+
+    .toggle-row,
+    .chip-row {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+      padding: var(--space-1-5) var(--space-2);
+      border-radius: var(--radius-m);
+      border: 1px solid var(--border-subtle);
+      background: color-mix(in srgb, var(--surface-raised) 80%, var(--page-bg-alt) 20%);
+      color: var(--text-muted);
+      cursor: pointer;
+      min-width: 0;
+      font-size: 0.8rem;
+    }
+
+    .toggle-label {
+      white-space: nowrap;
+    }
+
+    .toggle-track {
+      width: 38px;
+      height: 20px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+      background: color-mix(in srgb, var(--surface-base) 80%, var(--page-bg-alt) 20%);
+      display: flex;
+      align-items: center;
+      padding: 0 var(--space-0-5);
+    }
+
+    .toggle-knob {
+      width: 14px;
+      height: 14px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-highest);
+      box-shadow: var(--shadow-glow-dot);
+      transform: translateX(0);
+      transition: transform 0.16s ease-out, background 0.16s ease-out;
+    }
+
+    .toggle.is-on {
+      border-color: color-mix(
+        in srgb,
+        var(--accent-primary) 60%,
+        var(--border-subtle)
+      );
+      background: color-mix(in srgb, var(--accent-primary) 15%, var(--surface-raised));
+      color: var(--text-primary);
+    }
+
+    .toggle.is-on .toggle-track {
+      background: color-mix(in srgb, var(--accent-primary) 35%, var(--surface-base));
+      border-color: color-mix(
+        in srgb,
+        var(--accent-primary) 60%,
+        var(--border-subtle)
+      );
+    }
+
+    .toggle.is-on .toggle-knob {
+      background: var(--text-inverted);
+      transform: translateX(14px);
+    }
+
+    .chip-check,
+    .chip-radio {
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+      background: color-mix(in srgb, var(--surface-raised) 80%, var(--page-bg-alt) 20%);
+      color: var(--text-muted);
+      padding: var(--space-1) var(--space-2);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .chip-check.is-on,
+    .chip-radio.is-active {
+      border-color: color-mix(
+        in srgb,
+        var(--accent-primary) 60%,
+        var(--border-subtle)
+      );
+      background: color-mix(in srgb, var(--accent-primary) 18%, transparent);
+      color: var(--text-primary);
+    }
+
+    .check-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: var(--radius-xs);
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+    }
+
+    .chip-check.is-on .check-indicator {
+      background: var(--accent-success);
+      border-color: color-mix(
+        in srgb,
+        var(--accent-success) 60%,
+        var(--border-subtle)
+      );
+      box-shadow: var(--shadow-glow-dot);
+    }
+
+    .radio-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+    }
+
+    .chip-radio.is-active .radio-indicator {
+      background: var(--accent-primary);
+      border-color: color-mix(
+        in srgb,
+        var(--accent-primary) 60%,
+        var(--border-subtle)
+      );
+      box-shadow: var(--shadow-glow-dot);
+    }
+
+    .playground-note {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    /* ------------------------------------------
+       4. Responsive tweaks for mobile
+       ------------------------------------------ */
+
+    @media (max-width: 768px) {
+      body {
+        padding: var(--space-3);
+      }
+
+      .theme-panel {
+        padding: var(--space-3);
+      }
+
+      .app-shell {
+        display: flex;
+        flex-direction: column;
+        min-height: auto;
+      }
+
+      .sidebar {
+        padding: var(--space-3);
+        border-right: none;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      .topbar {
+        padding: var(--space-2) var(--space-3);
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .content {
+        padding: var(--space-3);
+      }
+
+      .cards-row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .table-section {
+        padding: var(--space-2);
+      }
+
+      .theme-shell {
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 class="page-title">Palette Skeleton Demo</h1>
+  <p class="page-intro">
+    Same skeleton UI, three themes: <strong>Control Room Cool</strong>,
+    <strong>Crip Candy</strong>, and <strong>Luxury Gloss</strong>. Each panel
+    below is the same HTML template stamped into a container with different token
+    values. Use the editor below to tweak <code>[data-theme]</code> theme maps
+    (including labels) and share them via the URL.
+  </p>
+
+  <!-- Token editor panel -->
+  <details class="token-editor" id="token-editor">
+    <summary>Theme config JSON editor</summary>
+    <div class="token-editor-body">
+      <div class="token-editor-buttons">
+        <button type="button" id="copy-tokens">Copy JSON</button>
+        <button type="button" id="paste-tokens">Paste JSON</button>
+        <button type="button" id="reset-themes">Reset themes</button>
+        <button type="button" id="copy-style-prompt">Copy style prompt</button>
+        <span class="token-editor-hint">
+          Edit the JSON map of theme IDs to <code>{ label, tag, tokens }</code>.
+          URL updates (compressed with pako) after ~400ms of inactivity.
+        </span>
+      </div>
+      <textarea id="token-textarea" spellcheck="false"></textarea>
+      <div class="token-editor-error-text" id="token-editor-error">
+        JSON parse error. Fix the syntax to apply changes.
+      </div>
+    </div>
+  </details>
+
+  <div class="themes-grid" id="themes-grid"></div>
+
+  <!-- Skeleton UI template using tokens -->
+  <template id="skeleton-ui">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          CONTROL STACK
+          <span>Signal Surface &amp; Token Shell</span>
+        </div>
+
+        <nav class="sidebar-nav">
+          <div class="nav-item is-active">
+            <span>Overview</span>
+            <span class="nav-dot"></span>
+          </div>
+          <div class="nav-item">
+            <span>Telemetry</span>
+            <span class="mono-label">08 feeds</span>
+          </div>
+          <div class="nav-item">
+            <span>Alerts</span>
+            <span class="mono-label">3 pending</span>
+          </div>
+          <div class="nav-item">
+            <span>Audit Log</span>
+            <span class="mono-label">Live</span>
+          </div>
+        </nav>
+
+        <div class="sidebar-meta">
+          Channel Utilization
+          <div class="sidebar-meter">
+            <div class="sidebar-meter-fill"></div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div class="topbar-title">
+            SYSTEM STATUS &bull; LIVE SNAPSHOT
+          </div>
+          <div class="topbar-actions">
+            <button class="btn">Tokens</button>
+            <button class="btn btn-primary">Deploy profile</button>
+          </div>
+        </header>
+
+        <div class="content">
+          <!-- Stats row -->
+          <section class="cards-row">
+            <article class="card">
+              <div class="card-title">Latency</div>
+              <div class="stat-value">18.4 ms</div>
+              <div class="stat-pill-row">
+                <span class="pill pill--primary">Primary Path</span>
+                <span class="pill">P99 &lt; 40 ms</span>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card-title">Throughput</div>
+              <div class="stat-value">12.3 k/s</div>
+              <div class="stat-pill-row">
+                <span class="pill pill--success">Nominal</span>
+                <span class="pill">Burst headroom 24%</span>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card-title">Error Rate</div>
+              <div class="stat-value">0.21 %</div>
+              <div class="stat-pill-row">
+                <span class="pill pill--warning">Degraded zone</span>
+                <span class="pill">2 regions in watchlist</span>
+              </div>
+            </article>
+          </section>
+
+          <!-- Table -->
+          <section class="table-section">
+            <div class="table-title-row">
+              <div class="table-title">Channel Health</div>
+              <div class="table-legend">
+                <span class="legend-chip">
+                  <span class="legend-dot legend-dot--ok"></span> OK
+                </span>
+                <span class="legend-chip">
+                  <span class="legend-dot legend-dot--warn"></span> Warning
+                </span>
+                <span class="legend-chip">
+                  <span class="legend-dot legend-dot--err"></span> Critical
+                </span>
+              </div>
+            </div>
+
+            <div class="table-scroll">
+              <table class="fake-table">
+                <thead>
+                  <tr>
+                    <th>Channel</th>
+                    <th>Latency</th>
+                    <th>Load</th>
+                    <th>Region</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="mono-label">edge-gw-01</td>
+                    <td>11.2 ms</td>
+                    <td>64%</td>
+                    <td>NA-EAST</td>
+                    <td><span class="badge badge--ok">OK</span></td>
+                  </tr>
+                  <tr>
+                    <td class="mono-label">edge-gw-17</td>
+                    <td>32.8 ms</td>
+                    <td>88%</td>
+                    <td>EU-CENTRAL</td>
+                    <td><span class="badge badge--warn">Warn</span></td>
+                  </tr>
+                  <tr>
+                    <td class="mono-label">stream-core-a3</td>
+                    <td>48.5 ms</td>
+                    <td>93%</td>
+                    <td>AP-SOUTHEAST</td>
+                    <td><span class="badge badge--err">Critical</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Interaction playground / fidget area -->
+          <section class="playground">
+            <div class="playground-header">
+              <div class="playground-title">Interaction Playground</div>
+              <div class="playground-tabs" role="tablist">
+                <button class="tab is-active" data-tab="signals" role="tab" aria-selected="true">
+                  Signals
+                </button>
+                <button class="tab" data-tab="modes" role="tab" aria-selected="false">
+                  Modes
+                </button>
+                <button class="tab" data-tab="prefs" role="tab" aria-selected="false">
+                  Prefs
+                </button>
+              </div>
+            </div>
+
+            <div class="playground-body">
+              <!-- Tab 1: toggles -->
+              <div class="tab-panel is-active" data-tab-panel="signals">
+                <div class="toggle-row">
+                  <button
+                    class="toggle is-on"
+                    data-toggle
+                    role="switch"
+                    aria-checked="true"
+                  >
+                    <span class="toggle-label">Auto-balance</span>
+                    <span class="toggle-track">
+                      <span class="toggle-knob"></span>
+                    </span>
+                  </button>
+                  <button
+                    class="toggle"
+                    data-toggle
+                    role="switch"
+                    aria-checked="false"
+                  >
+                    <span class="toggle-label">Noise gate</span>
+                    <span class="toggle-track">
+                      <span class="toggle-knob"></span>
+                    </span>
+                  </button>
+                  <button
+                    class="toggle"
+                    data-toggle
+                    role="switch"
+                    aria-checked="false"
+                  >
+                    <span class="toggle-label">Loopback</span>
+                    <span class="toggle-track">
+                      <span class="toggle-knob"></span>
+                    </span>
+                  </button>
+                </div>
+                <p class="playground-note">
+                  Tap switches and watch the toggles flip between states.
+                </p>
+              </div>
+
+              <!-- Tab 2: radio group -->
+              <div class="tab-panel" data-tab-panel="modes">
+                <div class="chip-row" role="radiogroup" aria-label="Profile mode">
+                  <button
+                    class="chip-radio is-active"
+                    data-radio="profile"
+                    data-value="safe"
+                    role="radio"
+                    aria-checked="true"
+                  >
+                    <span class="radio-indicator"></span>
+                    Safe
+                  </button>
+                  <button
+                    class="chip-radio"
+                    data-radio="profile"
+                    data-value="balanced"
+                    role="radio"
+                    aria-checked="false"
+                  >
+                    <span class="radio-indicator"></span>
+                    Balanced
+                  </button>
+                  <button
+                    class="chip-radio"
+                    data-radio="profile"
+                    data-value="max"
+                    role="radio"
+                    aria-checked="false"
+                  >
+                    <span class="radio-indicator"></span>
+                    Max
+                  </button>
+                </div>
+                <p class="playground-note">
+                  Radio chips act as a single-select mode profile.
+                </p>
+              </div>
+
+              <!-- Tab 3: checkbox chips -->
+              <div class="tab-panel" data-tab-panel="prefs">
+                <div class="chip-row">
+                  <button
+                    class="chip-check is-on"
+                    data-check
+                    role="checkbox"
+                    aria-checked="true"
+                  >
+                    <span class="check-indicator"></span>
+                    Mirror to standby
+                  </button>
+                  <button
+                    class="chip-check"
+                    data-check
+                    role="checkbox"
+                    aria-checked="false"
+                  >
+                    <span class="check-indicator"></span>
+                    Record trail
+                  </button>
+                  <button
+                    class="chip-check"
+                    data-check
+                    role="checkbox"
+                    aria-checked="false"
+                  >
+                    <span class="check-indicator"></span>
+                    Haptic ping
+                  </button>
+                </div>
+                <p class="playground-note">
+                  Checkbox chips can be toggled independently for pure fidget value.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </template>
+
+  <!-- Pako CDN for compression -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" integrity="" crossorigin="anonymous"></script>
+
+  <script>
+    // Default theme configuration: meta + tokens in one object
+    const defaultThemeConfig = {
+      "control-room-cool": {
+        label: "Control Room Cool",
+        tag: "NOC / Starship",
+        tokens: {
+          "--surface-base": "#050814",
+          "--surface-raised": "#0b1220",
+          "--surface-highest": "#111827",
+          "--border-subtle": "#1f2933",
+          "--border-strong": "#4b5563",
+          "--border-highlight": "#38bdf8",
+          "--text-primary": "#e5e7eb",
+          "--text-muted": "#9ca3af",
+          "--text-inverted": "#020617",
+          "--accent-primary": "#22d3ee",
+          "--accent-secondary": "#38bdf8",
+          "--accent-tertiary": "#a3d8ff",
+          "--accent-success": "#4ade80",
+          "--accent-warning": "#facc15",
+          "--accent-danger": "#f97373",
+          "--radius-xs": "2px",
+          "--radius-s": "6px",
+          "--radius-m": "10px",
+          "--radius-l": "16px",
+          "--radius-pill": "999px",
+          "--shadow-elevation": "0 18px 36px rgba(15, 23, 42, 0.9)"
+        }
+      },
+      "crip-candy": {
+        label: "Crip Candy",
+        tag: "Neon Pastel",
+        tokens: {
+          "--surface-base": "#11071f",
+          "--surface-raised": "#1f1035",
+          "--surface-highest": "#2a1745",
+          "--border-subtle": "#311c53",
+          "--border-strong": "#4b2a7a",
+          "--border-highlight": "#fdffc2",
+          "--text-primary": "#111827",
+          "--text-muted": "#4b5563",
+          "--text-inverted": "#f9fafb",
+          "--accent-primary": "#ff76ce",
+          "--accent-secondary": "#94ffd8",
+          "--accent-tertiary": "#a3d8ff",
+          "--accent-success": "#94ffd8",
+          "--accent-warning": "#fdffc2",
+          "--accent-danger": "#f97373",
+          "--radius-xs": "4px",
+          "--radius-s": "10px",
+          "--radius-m": "16px",
+          "--radius-l": "24px",
+          "--radius-pill": "999px",
+          "--shadow-elevation": "0 18px 40px rgba(24, 16, 52, 0.95)"
+        }
+      },
+      "luxury-gloss": {
+        label: "Luxury Gloss",
+        tag: "Black & Gold (Sharp)",
+        tokens: {
+          "--surface-base": "#faf5e6",
+          "--surface-raised": "#f5efe0",
+          "--surface-highest": "#ffffff",
+          "--border-subtle": "#e5dec8",
+          "--border-strong": "#b59b52",
+          "--border-highlight": "#d4af37",
+          "--text-primary": "#1f2933",
+          "--text-muted": "#6b7280",
+          "--text-inverted": "#0b0b0b",
+          "--accent-primary": "#d4af37",
+          "--accent-secondary": "#7f1d1d",
+          "--accent-tertiary": "#047857",
+          "--accent-success": "#047857",
+          "--accent-warning": "#facc6b",
+          "--accent-danger": "#b91c1c",
+          "--radius-xs": "1px",
+          "--radius-s": "3px",
+          "--radius-m": "6px",
+          "--radius-l": "10px",
+          "--radius-pill": "999px",
+          "--shadow-elevation": "0 12px 32px rgba(0, 0, 0, 0.25)"
+        }
+      }
+    };
+
+    // Default style-generator prompt (updated radius tokens, not dark-only)
+    const defaultStyleGeneratorPrompt = `You are a fast UI design assistant optimized for small, fast models (ChatGPT 5 Mini / Gemini 2.5 Flash class).
+
+Your task: generate ONLY a JSON object containing 3–5 themes for a control-room style dashboard. Themes MAY be light, dark, or mixed, but must maintain good contrast and usability.
+
+JSON SCHEMA (for validation, do not return this in your answer)
+--------------------------------------------------------------
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ThemeConfigMap",
+  "type": "object",
+  "patternProperties": {
+    "^[a-z0-9-_]+$": {
+      "type": "object",
+      "properties": {
+        "label": { "type": "string" },
+        "tag":   { "type": "string" },
+        "tokens": {
+          "type": "object",
+          "properties": {
+            "--surface-base":    { "type": "string" },
+            "--surface-raised":  { "type": "string" },
+            "--surface-highest": { "type": "string" },
+
+            "--border-subtle":    { "type": "string" },
+            "--border-strong":    { "type": "string" },
+            "--border-highlight": { "type": "string" },
+
+            "--text-primary":   { "type": "string" },
+            "--text-muted":     { "type": "string" },
+            "--text-inverted":  { "type": "string" },
+
+            "--accent-primary":   { "type": "string" },
+            "--accent-secondary": { "type": "string" },
+            "--accent-tertiary":  { "type": "string" },
+
+            "--accent-success": { "type": "string" },
+            "--accent-warning": { "type": "string" },
+            "--accent-danger":  { "type": "string" },
+
+            "--radius-xs":   { "type": "string" },
+            "--radius-s":    { "type": "string" },
+            "--radius-m":    { "type": "string" },
+            "--radius-l":    { "type": "string" },
+            "--radius-pill": { "type": "string" },
+
+            "--shadow-elevation": { "type": "string" }
+          },
+          "required": [
+            "--surface-base",
+            "--surface-raised",
+            "--surface-highest",
+            "--border-subtle",
+            "--border-strong",
+            "--border-highlight",
+            "--text-primary",
+            "--text-muted",
+            "--text-inverted",
+            "--accent-primary",
+            "--accent-secondary",
+            "--accent-tertiary",
+            "--accent-success",
+            "--accent-warning",
+            "--accent-danger",
+            "--radius-xs",
+            "--radius-s",
+            "--radius-m",
+            "--radius-l",
+            "--radius-pill",
+            "--shadow-elevation"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": ["label", "tag", "tokens"],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
+
+VARIABLE DESCRIPTIONS
+---------------------
+--surface-base        : main canvas / background surface.
+--surface-raised      : panels, cards, secondary shells.
+--surface-highest     : headers, overlays, elevated surfaces.
+--border-subtle       : low-emphasis borders and dividers.
+--border-strong       : strong borders and focus rings.
+--border-highlight    : accent borders and selections.
+--text-primary        : main body text on primary surfaces.
+--text-muted          : subdued labels and meta text.
+--text-inverted       : text on strong accent or contrasting surfaces.
+--accent-primary      : main brand / action accent.
+--accent-secondary    : secondary accent for chrome.
+--accent-tertiary     : optional third accent.
+--accent-success      : success / nominal state.
+--accent-warning      : warning / degraded state.
+--accent-danger       : error / critical state.
+--radius-xs           : sharpest radius for tiny elements / indicators.
+--radius-s            : small radius for compact controls.
+--radius-m            : medium radius for cards and larger controls.
+--radius-l            : large radius for outer shells / panels.
+--radius-pill         : full pill radius for chips, toggles, nav dots.
+--shadow-elevation    : main elevation shadow for shells.
+
+REQUIREMENTS
+------------
+- Output MUST be a single JSON object that is a VALID INSTANCE of the schema above.
+- Do NOT include the schema itself in the output.
+- No comments, no trailing commas, no prose.
+- Use hex or rgba color strings for all color values.
+- Ensure sufficient contrast between text and background for each theme.
+- Make each theme cohesive and stylistically distinct (e.g. cool technical, neon pastel, luxury gloss, muted industrial).
+
+Return only the JSON object.`;
+
+    const textarea = document.getElementById("token-textarea");
+    const editor = document.getElementById("token-editor");
+
+    function setEditorError(hasError) {
+      if (!editor) return;
+      if (hasError) {
+        editor.classList.add("token-editor--error");
+      } else {
+        editor.classList.remove("token-editor--error");
+      }
+    }
+
+    function safeParseThemes(text) {
+      try {
+        const obj = JSON.parse(text);
+        if (obj && typeof obj === "object") return obj;
+      } catch (e) {
+        console.warn("JSON parse error", e);
+      }
+      return null;
+    }
+
+    // Normalize raw JSON into { id: { label?, tag?, tokens: {...} } }
+    function normalizeThemeConfig(raw) {
+      const normalized = {};
+      if (!raw || typeof raw !== "object") return normalized;
+      Object.entries(raw).forEach(([id, val]) => {
+        if (!val || typeof val !== "object" || Array.isArray(val)) return;
+        if (val.tokens || val.label || val.tag) {
+          normalized[id] = {
+            label: val.label || undefined,
+            tag: val.tag || undefined,
+            tokens: val.tokens && typeof val.tokens === "object" ? val.tokens : {}
+          };
+        } else {
+          // simple tokens-only map
+          normalized[id] = {
+            tokens: val
+          };
+        }
+      });
+      return normalized;
+    }
+
+    function applyThemes(themeConfig) {
+      if (!themeConfig) return;
+      const panels = document.querySelectorAll(".theme-panel[data-theme]");
+      panels.forEach((panel) => {
+        const name = panel.getAttribute("data-theme");
+        const cfg = themeConfig[name];
+        if (!cfg || !cfg.tokens) return;
+        Object.entries(cfg.tokens).forEach(([key, value]) => {
+          panel.style.setProperty(key, value);
+        });
+      });
+    }
+
+    function initShellInteractions(shellRoot) {
+      if (!shellRoot) return;
+
+      // Tabs
+      const tabs = shellRoot.querySelectorAll("[data-tab]");
+      const panels = shellRoot.querySelectorAll("[data-tab-panel]");
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const id = tab.getAttribute("data-tab");
+          tabs.forEach((t) => {
+            const active = t === tab;
+            t.classList.toggle("is-active", active);
+            t.setAttribute("aria-selected", active ? "true" : "false");
+          });
+          panels.forEach((panel) => {
+            const panelId = panel.getAttribute("data-tab-panel");
+            panel.classList.toggle("is-active", panelId === id);
+          });
+        });
+      });
+
+      // Toggles
+      const toggles = shellRoot.querySelectorAll("[data-toggle]");
+      toggles.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const isOn = btn.classList.toggle("is-on");
+          btn.setAttribute("aria-checked", isOn ? "true" : "false");
+        });
+      });
+
+      // Checkbox chips
+      const checks = shellRoot.querySelectorAll("[data-check]");
+      checks.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const isOn = btn.classList.toggle("is-on");
+          btn.setAttribute("aria-checked", isOn ? "true" : "false");
+        });
+      });
+
+      // Radio chip groups
+      const radios = shellRoot.querySelectorAll("[data-radio]");
+      const groups = {};
+      radios.forEach((btn) => {
+        const group = btn.getAttribute("data-radio");
+        if (!groups[group]) groups[group] = [];
+        groups[group].push(btn);
+      });
+      Object.values(groups).forEach((groupBtns) => {
+        groupBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            groupBtns.forEach((b) => {
+              const active = b === btn;
+              b.classList.toggle("is-active", active);
+              b.setAttribute("aria-checked", active ? "true" : "false");
+            });
+          });
+        });
+      });
+    }
+
+    function humanizeId(id) {
+      return id
+        .replace(/[-_]+/g, " ")
+        .replace(/\b\w/g, (m) => m.toUpperCase());
+    }
+
+    function rebuildPanels(themeConfig) {
+      const grid = document.getElementById("themes-grid");
+      const tpl = document.getElementById("skeleton-ui");
+      if (!grid || !tpl) return;
+
+      grid.innerHTML = "";
+
+      Object.keys(themeConfig).forEach((themeId) => {
+        const cfg = themeConfig[themeId] || {};
+        const label = cfg.label || humanizeId(themeId);
+        const tag = cfg.tag || "Theme";
+
+        const panel = document.createElement("section");
+        panel.className = "theme-panel";
+        panel.setAttribute("data-theme", themeId);
+
+        const header = document.createElement("div");
+        header.className = "theme-panel-header";
+
+        const nameEl = document.createElement("h2");
+        nameEl.className = "theme-name";
+        nameEl.textContent = label;
+
+        const tagEl = document.createElement("span");
+        tagEl.className = "theme-tag";
+        tagEl.textContent = tag;
+
+        header.appendChild(nameEl);
+        header.appendChild(tagEl);
+
+        const shell = document.createElement("div");
+        shell.className = "theme-shell js-theme-shell";
+        const clone = tpl.content.cloneNode(true);
+        shell.appendChild(clone);
+
+        panel.appendChild(header);
+        panel.appendChild(shell);
+        grid.appendChild(panel);
+
+        // Initialize fidget interactions for this shell
+        initShellInteractions(shell);
+      });
+    }
+
+    function encodeToUrl(text) {
+      if (!window.pako) return;
+      try {
+        const compressed = window.pako.deflate(text);
+        let binary = "";
+        compressed.forEach((b) => {
+          binary += String.fromCharCode(b);
+        });
+        const base64 = btoa(binary);
+        const url = new URL(window.location.href);
+        url.searchParams.set("t", base64);
+        window.history.replaceState(null, "", url.toString());
+      } catch (e) {
+        console.error("Encoding to URL failed", e);
+      }
+    }
+
+    function decodeFromUrl() {
+      if (!window.pako) return null;
+      try {
+        const url = new URL(window.location.href);
+        const base64 = url.searchParams.get("t");
+        if (!base64) return null;
+        const binary = atob(base64);
+        const bytes = new Uint8Array(
+          binary.split("").map((c) => c.charCodeAt(0))
+        );
+        const text = window.pako.inflate(bytes, { to: "string" });
+        return text;
+      } catch (e) {
+        console.error("Decoding from URL failed", e);
+        return null;
+      }
+    }
+
+    function debounce(fn, delay) {
+      let timer = null;
+      return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+      };
+    }
+
+    const debouncedEncode = debounce(() => {
+      encodeToUrl(textarea.value);
+    }, 400);
+
+    function handleTextareaChange() {
+      const text = textarea.value;
+      const raw = safeParseThemes(text);
+      if (!raw) {
+        setEditorError(true);
+        return;
+      }
+      const normalized = normalizeThemeConfig(raw);
+      setEditorError(false);
+      rebuildPanels(normalized);
+      applyThemes(normalized);
+      debouncedEncode();
+    }
+
+    // Clipboard helpers
+    const copyBtn = document.getElementById("copy-tokens");
+    const pasteBtn = document.getElementById("paste-tokens");
+    const resetBtn = document.getElementById("reset-themes");
+    const copyPromptBtn = document.getElementById("copy-style-prompt");
+
+    if (copyBtn) {
+      copyBtn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(textarea.value);
+        } catch (e) {
+          console.warn("Clipboard write failed", e);
+        }
+      });
+    }
+
+    if (pasteBtn) {
+      pasteBtn.addEventListener("click", async () => {
+        try {
+          const text = await navigator.clipboard.readText();
+          if (!text) return;
+          textarea.value = text;
+          handleTextareaChange();
+        } catch (e) {
+          console.warn("Clipboard read failed", e);
+        }
+      });
+    }
+
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        textarea.value = JSON.stringify(defaultThemeConfig, null, 2);
+        handleTextareaChange();
+      });
+    }
+
+    if (copyPromptBtn) {
+      copyPromptBtn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(defaultStyleGeneratorPrompt);
+        } catch (e) {
+          console.warn("Clipboard write (prompt) failed", e);
+        }
+      });
+    }
+
+    // Initialize editor contents from URL or defaults, then apply themes
+    (function initEditor() {
+      let initialText = decodeFromUrl();
+      let rawThemes = null;
+
+      if (initialText) {
+        textarea.value = initialText;
+        rawThemes = safeParseThemes(initialText);
+      }
+
+      if (!rawThemes) {
+        rawThemes = defaultThemeConfig;
+        textarea.value = JSON.stringify(defaultThemeConfig, null, 2);
+      }
+
+      const normalized = normalizeThemeConfig(rawThemes);
+      setEditorError(false);
+      rebuildPanels(normalized);
+      applyThemes(normalized);
+
+      textarea.addEventListener("input", handleTextareaChange);
+    })();
+  </script>
+</body>
+</html>
 
