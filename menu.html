@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Palette Toy Demos</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 10% -20%, #1e293b, #020617);
+      color: #e5e7eb;
+      min-height: 100vh;
+      margin: 0;
+      padding: 48px;
+      display: grid;
+      gap: 24px;
+    }
+
+    h1 {
+      margin: 0;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 1.2rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    a {
+      color: #38bdf8;
+      text-decoration: none;
+      background: rgba(30, 41, 59, 0.7);
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      display: block;
+      transition: transform 120ms ease, background 120ms ease;
+    }
+
+    a:hover {
+      background: rgba(56, 189, 248, 0.12);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Palette Toy HTML demos</h1>
+    <p>All demo variants stay CDN-only and build-free.</p>
+  </header>
+  <ul>
+    <li><a href="index.html">Core editor + skeleton UI</a></li>
+    <li><a href="index-vanjs.html">VanJS variant</a></li>
+    <li><a href="index-mithril.html">Mithril variant</a></li>
+    <li><a href="index-htm-preact.html">HTM + Preact variant</a></li>
+    <li><a href="index-lit-html.html">lit-html variant</a></li>
+    <li><a href="index-open-props.html">Open Props token bridge</a></li>
+    <li><a href="index-shoelace.html">Shoelace theme demo</a></li>
+    <li><a href="index-radix-colors.html">Radix Colors demo</a></li>
+  </ul>
+</body>
+</html>
