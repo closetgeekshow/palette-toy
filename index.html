@@ -121,6 +121,64 @@
       --space-5: 24px;
       --space-6: 32px;
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Palette Token Demo with URL-Encoded Editor</title>
+  <style>
+    /* ------------------------------------------
+       1. Base token namespace (fallbacks)
+       ------------------------------------------ */
+    :root {
+      /* Core surfaces (theme-overridable) */
+      --surface-base: #0b1120;
+      --surface-raised: #111827;
+      --surface-highest: #1f2937;
+
+      /* Core borders (theme-overridable) */
+      --border-subtle: #1f2933;
+      --border-strong: #4b5563;
+      --border-highlight: #f5d97a;
+
+      /* Core text (theme-overridable) */
+      --text-primary: #f9fafb;
+      --text-muted: #9ca3af;
+      --text-inverted: #020617;
+
+      /* Accents (theme-overridable) */
+      --accent-primary: #22d3ee;
+      --accent-secondary: #38bdf8;
+      --accent-tertiary: #a3d8ff;
+      --accent-success: #4ade80;
+      --accent-warning: #facc15;
+      --accent-danger: #f97373;
+
+      /* Radius tokens (theme-overridable) */
+      --radius-xs: 2px;
+      --radius-s: 6px;
+      --radius-m: 10px;
+      --radius-l: 16px;
+      --radius-pill: 999px;
+
+      /* Spacing scale */
+      --space-0-5: 2px;
+      --space-1: 4px;
+      --space-1-5: 6px;
+      --space-2: 8px;
+      --space-2-5: 10px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+
+      /* Shadows */
+      --shadow-elevation: 0 20px 40px rgba(0, 0, 0, 0.45);
+      --shadow-glow-accent: 0 0 16px rgba(56, 189, 248, 0.55);
+      --shadow-glow-dot: 0 0 8px rgba(148, 163, 184, 0.6);
+      --shadow-glow-meter: 0 0 12px rgba(255, 255, 255, 0.3);
+
       /* Fonts */
       --font-safe-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --font-safe-code: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
