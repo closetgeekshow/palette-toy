@@ -4,6 +4,129 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Palette Token Demo with URL-Encoded Editor</title>
+  <script>
+    const TOKEN_MANIFEST = {
+      surfaces: {
+        "--surface-base": { default: "#0b1120", required: true },
+        "--surface-raised": { default: "#111827", required: true },
+        "--surface-highest": { default: "#1f2937", required: true }
+      },
+      borders: {
+        "--border-subtle": { default: "#1f2933", required: true },
+        "--border-strong": { default: "#4b5563", required: true },
+        "--border-highlight": {
+          default: "#f5d97a",
+          required: false,
+          derive: "A bright accent border"
+        }
+      },
+      text: {
+        "--text-primary": { default: "#f9fafb", required: true },
+        "--text-muted": { default: "#9ca3af", required: true },
+        "--text-inverted": { default: "#020617", required: true }
+      },
+      accents: {
+        "--accent-primary": { default: "#22d3ee", required: true },
+        "--accent-secondary": { default: "#38bdf8", required: false },
+        "--accent-tertiary": { default: "#a3d8ff", required: false },
+        "--accent-success": { default: "#4ade80", required: true },
+        "--accent-warning": { default: "#facc15", required: false },
+        "--accent-danger": { default: "#f97373", required: true }
+      },
+      radii: {
+        "--radius-xs": { default: "2px", required: false, derive: "Sharp edge" },
+        "--radius-s": { default: "6px", required: false },
+        "--radius-m": { default: "10px", required: false },
+        "--radius-l": { default: "16px", required: false },
+        "--radius-pill": {
+          default: "999px",
+          required: false,
+          derive: "Pill buttons"
+        }
+      },
+      shadows: {
+        "--shadow-elevation": {
+          default: "0 20px 40px rgba(0, 0, 0, 0.45)",
+          required: true
+        },
+        "--shadow-glow-accent": {
+          default: "0 0 16px rgba(56, 189, 248, 0.55)",
+          required: false,
+          derive: "Accent outline glow"
+        },
+        "--shadow-glow-dot": {
+          default: "0 0 8px rgba(148, 163, 184, 0.6)",
+          required: false
+        },
+        "--shadow-glow-meter": {
+          default: "0 0 12px rgba(255, 255, 255, 0.3)",
+          required: false
+        }
+      }
+    };
+
+    const FONT_VARIABLES = [
+      "--font-logo",
+      "--font-heading",
+      "--font-body",
+      "--font-code"
+    ];
+
+    const TOKEN_METADATA = Object.entries(TOKEN_MANIFEST).flatMap(
+      ([groupName, tokens]) =>
+        Object.entries(tokens).map(([name, meta]) => ({
+          name,
+          group: groupName,
+          required: Boolean(meta.required),
+          default: meta.default,
+          derive: meta.derive
+        }))
+    );
+
+    const BASE_TOKENS = Object.fromEntries(
+      TOKEN_METADATA.map((meta) => [meta.name, meta.default])
+    );
+
+    const REQUIRED_TOKENS = TOKEN_METADATA.filter((meta) => meta.required).map(
+      (meta) => meta.name
+    );
+    const OPTIONAL_TOKENS = TOKEN_METADATA.filter((meta) => !meta.required).map(
+      (meta) => meta.name
+    );
+
+    function renderBaseTokens(target = document.getElementById("base-token-style")) {
+      if (!target) {
+        target = document.createElement("style");
+        target.id = "base-token-style";
+        document.head.prepend(target);
+      }
+      const lines = TOKEN_METADATA.map(
+        (meta) => `  ${meta.name}: ${meta.default};`
+      );
+      target.textContent = `:root {\n${lines.join("\n")}\n}`;
+    }
+
+    renderBaseTokens();
+  </script>
+  <style>
+    :root {
+      /* Spacing scale */
+      --space-0-5: 2px;
+      --space-1: 4px;
+      --space-1-5: 6px;
+      --space-2: 8px;
+      --space-2-5: 10px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Palette Token Demo with URL-Encoded Editor</title>
   <style>
     /* ------------------------------------------
        1. Base token namespace (fallbacks)
@@ -87,7 +210,7 @@
       --editor-textarea-border: rgba(148, 163, 184, 0.5);
       --editor-error-text: #fca5a5;
 
-      --panel-border: rgba(148, 163, 184, 0.3);
+      --panel-border: color-mix(in srgb, var(--border-subtle) 65%, transparent);
       --meter-bg: rgba(15, 23, 42, 0.7);
       --meter-border: rgba(148, 163, 184, 0.4);
     }
@@ -110,6 +233,36 @@
       flex-direction: column;
       gap: var(--space-4);
       min-height: 100vh;
+    }
+
+    .pad-2 {
+      padding: var(--space-2);
+    }
+
+    .pad-3 {
+      padding: var(--space-3);
+    }
+
+    .pad-4 {
+      padding: var(--space-4);
+    }
+
+    .round-s {
+      border-radius: var(--radius-s);
+    }
+
+    .round-m {
+      border-radius: var(--radius-m);
+    }
+
+    .round-l {
+      border-radius: var(--radius-l);
+    }
+
+    .surface-panel {
+      background: var(--surface-raised);
+      border: 1px solid var(--panel-border);
+      box-shadow: var(--shadow-elevation);
     }
 
     h1,
@@ -250,10 +403,6 @@
         var(--surface-base, #020617) 60%,
         var(--page-bg-alt) 100%
       );
-      padding: var(--space-4);
-      border-radius: var(--radius-l);
-      border: 1px solid var(--panel-border);
-      box-shadow: var(--shadow-elevation);
     }
 
     .theme-panel-header {
@@ -304,7 +453,6 @@
         color-mix(in srgb, var(--surface-raised) 80%, var(--page-bg-alt) 20%),
         var(--surface-base)
       );
-      padding: var(--space-4);
       border-right: 1px solid var(--border-subtle);
       display: flex;
       flex-direction: column;
@@ -460,7 +608,6 @@
     }
 
     .content {
-      padding: var(--space-4);
       display: grid;
       grid-template-rows: auto auto auto;
       gap: var(--space-3);
@@ -554,10 +701,6 @@
     }
 
     .table-section {
-      background: color-mix(in srgb, var(--surface-raised) 90%, var(--page-bg-alt) 10%);
-      border-radius: var(--radius-m);
-      border: 1px solid var(--border-subtle);
-      padding: var(--space-3);
       display: flex;
       flex-direction: column;
       gap: var(--space-2);
@@ -902,10 +1045,6 @@
         padding: var(--space-3);
       }
 
-      .theme-panel {
-        padding: var(--space-3);
-      }
-
       .app-shell {
         display: flex;
         flex-direction: column;
@@ -913,7 +1052,6 @@
       }
 
       .sidebar {
-        padding: var(--space-3);
         border-right: none;
         border-bottom: 1px solid var(--border-subtle);
       }
@@ -924,16 +1062,16 @@
         align-items: flex-start;
       }
 
-      .content {
+      .pad-4 {
         padding: var(--space-3);
+      }
+
+      .pad-3 {
+        padding: var(--space-2-5);
       }
 
       .cards-row {
         grid-template-columns: minmax(0, 1fr);
-      }
-
-      .table-section {
-        padding: var(--space-2);
       }
 
       .theme-shell {
@@ -978,7 +1116,7 @@
   <!-- Skeleton UI template using tokens -->
   <template id="skeleton-ui">
     <div class="app-shell">
-      <aside class="sidebar">
+      <aside class="sidebar surface-panel pad-4 round-l">
         <div class="sidebar-logo">
           CONTROL STACK
           <span>Signal Surface &amp; Token Shell</span>
@@ -1022,7 +1160,7 @@
           </div>
         </header>
 
-        <div class="content">
+        <div class="content surface-panel pad-4 round-l">
           <!-- Stats row -->
           <section class="cards-row">
             <article class="card">
@@ -1052,7 +1190,7 @@
           </section>
 
           <!-- Table -->
-          <section class="table-section">
+          <section class="table-section surface-panel pad-3 round-m">
             <div class="table-title-row">
               <div class="table-title">Channel Health</div>
               <div class="table-legend">
@@ -1251,67 +1389,47 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" integrity="" crossorigin="anonymous"></script>
 
   <script>
-    const REQUIRED_TOKENS = [
-      "--surface-base",
-      "--surface-raised",
-      "--surface-highest",
-      "--border-subtle",
-      "--border-strong",
-      "--text-primary",
-      "--text-muted",
-      "--text-inverted",
-      "--accent-primary",
-      "--accent-success",
-      "--accent-danger",
-      "--shadow-elevation"
-    ];
-
-    const OPTIONAL_TOKENS = [
-      "--border-highlight",
-      "--accent-secondary",
-      "--accent-tertiary",
-      "--accent-warning",
-      "--radius-xs",
-      "--radius-s",
-      "--radius-m",
-      "--radius-l",
-      "--radius-pill"
-    ];
-
-    const FONT_VARIABLES = [
-      "--font-logo",
-      "--font-heading",
-      "--font-body",
-      "--font-code"
-    ];
-
     function humanizeId(id) {
       return id
         .replace(/[-_]+/g, " ")
         .replace(/\b\w/g, (m) => m.toUpperCase());
     }
 
+    function buildThemeTokens(overrides = {}) {
+      return { ...BASE_TOKENS, ...overrides };
+    }
+
+    function createTheme(id, meta = {}, overrides = {}) {
+      return {
+        label: meta.label || humanizeId(id),
+        tag: meta.tag || "Theme",
+        fonts: meta.fonts,
+        tokens: buildThemeTokens(overrides)
+      };
+    }
+
     // Default theme configuration: meta + tokens in one object
     const defaultThemeConfig = {
-      "control-room-cool": {
-        label: "Control Room Cool",
-        tag: "NOC / Starship",
-        fonts: {
-          imports: [
-            "family=Space+Grotesk:wght@500;600;700",
-            "family=JetBrains+Mono:wght@500;600"
-          ],
-          logo: '"Space Grotesk", "Inter", var(--font-safe-body)',
-          heading: '"Space Grotesk", "Inter", var(--font-safe-body)',
-          body: '"Inter", "Inter Variable", var(--font-safe-body)',
-          code: '"JetBrains Mono", var(--font-safe-code)'
+      "control-room-cool": createTheme(
+        "control-room-cool",
+        {
+          label: "Control Room Cool",
+          tag: "NOC / Starship",
+          fonts: {
+            imports: [
+              "family=Space+Grotesk:wght@500;600;700",
+              "family=JetBrains+Mono:wght@500;600"
+            ],
+            logo: '"Space Grotesk", "Inter", var(--font-safe-body)',
+            heading: '"Space Grotesk", "Inter", var(--font-safe-body)',
+            body: '"Inter", "Inter Variable", var(--font-safe-body)',
+            code: '"JetBrains Mono", var(--font-safe-code)'
+          }
         },
-        tokens: {
+        {
           "--surface-base": "#050814",
           "--surface-raised": "#0b1220",
           "--surface-highest": "#111827",
-          "--border-subtle": "#1f2933",
-          "--border-strong": "#4b5563",
           "--border-highlight": "#38bdf8",
           "--text-primary": "#e5e7eb",
           "--text-muted": "#9ca3af",
@@ -1319,31 +1437,27 @@
           "--accent-primary": "#22d3ee",
           "--accent-secondary": "#38bdf8",
           "--accent-tertiary": "#a3d8ff",
-          "--accent-success": "#4ade80",
           "--accent-warning": "#facc15",
-          "--accent-danger": "#f97373",
-          "--radius-xs": "2px",
-          "--radius-s": "6px",
-          "--radius-m": "10px",
-          "--radius-l": "16px",
-          "--radius-pill": "999px",
           "--shadow-elevation": "0 18px 36px rgba(15, 23, 42, 0.9)"
         }
-      },
-      "crip-candy": {
-        label: "Crip Candy",
-        tag: "Neon Pastel",
-        fonts: {
-          imports: [
-            "family=Plus+Jakarta+Sans:wght@500;600;700",
-            "family=JetBrains+Mono:wght@500;600"
-          ],
-          logo: '"Plus Jakarta Sans", "Inter", var(--font-safe-body)',
-          heading: '"Plus Jakarta Sans", var(--font-safe-body)',
-          body: '"Plus Jakarta Sans", var(--font-safe-body)',
-          code: '"JetBrains Mono", var(--font-safe-code)'
+      ),
+      "crip-candy": createTheme(
+        "crip-candy",
+        {
+          label: "Crip Candy",
+          tag: "Neon Pastel",
+          fonts: {
+            imports: [
+              "family=Plus+Jakarta+Sans:wght@500;600;700",
+              "family=JetBrains+Mono:wght@500;600"
+            ],
+            logo: '"Plus Jakarta Sans", "Inter", var(--font-safe-body)',
+            heading: '"Plus Jakarta Sans", var(--font-safe-body)',
+            body: '"Plus Jakarta Sans", var(--font-safe-body)',
+            code: '"JetBrains Mono", var(--font-safe-code)'
+          }
         },
-        tokens: {
+        {
           "--surface-base": "#11071f",
           "--surface-raised": "#1f1035",
           "--surface-highest": "#2a1745",
@@ -1361,26 +1475,28 @@
           "--accent-danger": "#f97373",
           "--radius-xs": "4px",
           "--radius-s": "10px",
-          "--radius-m": "16px",
-          "--radius-l": "24px",
-          "--radius-pill": "999px",
-          "--shadow-elevation": "0 18px 40px rgba(24, 16, 52, 0.95)"
+          "--radius-m": "14px",
+          "--radius-l": "18px",
+          "--shadow-elevation": "0 18px 36px rgba(17, 7, 31, 0.6)"
         }
-      },
-      "luxury-gloss": {
-        label: "Luxury Gloss",
-        tag: "Black & Gold (Sharp)",
-        fonts: {
-          imports: [
-            "family=Libre+Baskerville:wght@400;700",
-            "family=Manrope:wght@500;600;700"
-          ],
-          logo: '"Libre Baskerville", "Times New Roman", serif',
-          heading: '"Manrope", "Inter", var(--font-safe-body)',
-          body: '"Manrope", var(--font-safe-body)',
-          code: '"IBM Plex Mono", var(--font-safe-code)'
+      ),
+      "luxury-gloss": createTheme(
+        "luxury-gloss",
+        {
+          label: "Luxury Gloss",
+          tag: "Hyper Lux / Estate",
+          fonts: {
+            imports: [
+              "family=Manrope:wght@500;600;700",
+              "family=IBM+Plex+Mono:wght@500;600"
+            ],
+            logo: '"Cormorant Garamond", "Manrope", var(--font-safe-body)',
+            heading: '"Manrope", "Inter", var(--font-safe-body)',
+            body: '"Manrope", var(--font-safe-body)',
+            code: '"IBM Plex Mono", var(--font-safe-code)'
+          }
         },
-        tokens: {
+        {
           "--surface-base": "#faf5e6",
           "--surface-raised": "#f5efe0",
           "--surface-highest": "#ffffff",
@@ -1400,10 +1516,9 @@
           "--radius-s": "3px",
           "--radius-m": "6px",
           "--radius-l": "10px",
-          "--radius-pill": "999px",
           "--shadow-elevation": "0 12px 32px rgba(0, 0, 0, 0.25)"
         }
-      }
+      )
     };
 
     function buildStyleGeneratorPrompt(themeIdeas) {
@@ -1411,15 +1526,18 @@
         themeIdeas && themeIdeas.length > 0
           ? themeIdeas.map((idea) => `- ${idea}`).join("\n")
           : "- (Add your own THEME IDEAS here; do not auto-generate.)";
-      const tokenPropertyLines = [...REQUIRED_TOKENS, ...OPTIONAL_TOKENS]
-        .map((token) => `            "${token}": { "type": "string" }`)
-        .join(",\n");
+      const tokenPropertyLines = TOKEN_METADATA.map(
+        (meta) => `            "${meta.name}": { "type": "string" }`
+      ).join(",\n");
       const requiredTokenLines = REQUIRED_TOKENS.map(
         (token) => `            "${token}"`
       ).join(",\n");
-      const optionalTokenLines = OPTIONAL_TOKENS.map(
-        (token) => `- ${token}`
-      ).join("\n");
+      const optionalTokenLines = TOKEN_METADATA.filter((meta) => !meta.required)
+        .map((meta) => {
+          const derive = meta.derive ? `; ${meta.derive}` : "";
+          return `- ${meta.name} (default ${meta.default}${derive ? `, ${derive}` : ""})`;
+        })
+        .join("\n");
       const fontVarList = FONT_VARIABLES.join(", ");
 
       return `You are a fast UI design assistant optimized for small, fast models (ChatGPT 5 Mini / Gemini 2.5 Flash class).
@@ -1694,7 +1812,7 @@ OUTPUT
         const tag = cfg.tag || "Theme";
 
         const panel = document.createElement("section");
-        panel.className = "theme-panel";
+        panel.className = "theme-panel surface-panel pad-4 round-l";
         panel.setAttribute("data-theme", themeId);
 
         const header = document.createElement("div");

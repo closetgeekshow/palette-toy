@@ -1,5 +1,11 @@
 # Reducing Style Redundancy and Leveraging External Token Systems
 
+## Implemented reductions
+- Base token defaults and required/optional lists now come from a single manifest that renders CSS variables and schema text dynamically in `index.html`.
+- Theme cards derive from a shared token baseline with helper factories, trimming duplicate token blocks.
+- Prompt generation builds its schema and optional token notes from live token metadata.
+- Shared padding/radius utility classes (`pad-*`, `round-*`, `surface-panel`) replace repeated padding/shape declarations across the skeleton UI panels.
+
 ## Opportunities to Reduce Redundancy
 - **Consolidate base token defaults into a shareable module**: The root token namespace currently hardcodes surface, border, accent, radius, spacing, and font fallbacks directly in CSS. Moving these into a small JSON token registry that feeds both the CSS and the prompt generator would eliminate duplication between style definitions and the theme schema builder.【F:index.html†L11-L93】
 - **Generate schema expectations from the live token list**: Required/optional token arrays and font variable lists are maintained separately from the default token definitions. Deriving these arrays from a single token manifest would avoid hand-maintaining multiple string lists when adding or removing tokens.【F:index.html†L1269-L1287】
