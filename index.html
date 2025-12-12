@@ -671,6 +671,13 @@
       flex-wrap: wrap;
     }
 
+    .table-filters {
+      display: flex;
+      gap: var(--space-1-5);
+      flex-wrap: wrap;
+      margin-top: var(--space-1);
+    }
+
     .legend-chip {
       display: inline-flex;
       align-items: center;
@@ -1026,7 +1033,7 @@
   <h1 class="page-title">Palette Skeleton Demo</h1>
   <p class="page-intro">
     Same skeleton UI, three themes: <strong>Control Room Cool</strong>,
-    <strong>Crip Candy</strong>, and <strong>Luxury Gloss</strong>. Each panel
+    <strong>Crisp Candy</strong>, and <strong>Luxury Gloss</strong>. Each panel
     below is the same HTML template stamped into a container with different token
     values. Use the editor below to tweak <code>[data-theme]</code> theme maps
     (including labels) and share them via the URL.
@@ -1103,32 +1110,181 @@
         </header>
 
         <div class="content surface-panel pad-4 round-l">
-          <!-- Stats row -->
-          <section class="cards-row">
-            <article class="card">
-              <div class="card-title">Latency</div>
-              <div class="stat-value">18.4 ms</div>
-              <div class="stat-pill-row">
-                <span class="pill pill--primary">Primary Path</span>
-                <span class="pill">P99 &lt; 40 ms</span>
+          <!-- Stats + interaction grid -->
+          <section class="experience-grid">
+            <div class="stats-panel">
+              <div class="cards-row">
+                <article class="card">
+                  <div class="card-title">Throughput</div>
+                  <div class="stat-value">242 Gbps</div>
+                  <div class="stat-pill-row">
+                    <span class="pill pill--success">Up 3.1%</span>
+                    <span class="pill">Peak 420 Gbps</span>
+                  </div>
+                </article>
+                <article class="card">
+                  <div class="card-title">Latency</div>
+                  <div class="stat-value">18.4 ms</div>
+                  <div class="stat-pill-row">
+                    <span class="pill pill--success">Nominal</span>
+                    <span class="pill">Burst headroom 24%</span>
+                  </div>
+                </article>
+                <article class="card">
+                  <div class="card-title">Error Rate</div>
+                  <div class="stat-value">0.21 %</div>
+                  <div class="stat-pill-row">
+                    <span class="pill pill--warning">Degraded zone</span>
+                    <span class="pill">2 regions in watchlist</span>
+                  </div>
+                </article>
               </div>
-            </article>
-            <article class="card">
-              <div class="card-title">Throughput</div>
-              <div class="stat-value">12.3 k/s</div>
-              <div class="stat-pill-row">
-                <span class="pill pill--success">Nominal</span>
-                <span class="pill">Burst headroom 24%</span>
+            </div>
+
+            <div class="control-lab" aria-label="Interaction lab">
+              <div class="lab-header">
+                <div>
+                  <div class="lab-title">Interaction Lab</div>
+                  <p class="lab-note">
+                    Tabs, switches, radios, and checks now live alongside metrics so the whole dashboard is a tactile playground.
+                  </p>
+                </div>
+                <div class="lab-tabs" role="tablist">
+                  <button class="tab is-active" data-tab="signals" role="tab" aria-selected="true">
+                    Signals
+                  </button>
+                  <button class="tab" data-tab="modes" role="tab" aria-selected="false">
+                    Modes
+                  </button>
+                  <button class="tab" data-tab="prefs" role="tab" aria-selected="false">
+                    Prefs
+                  </button>
+                </div>
               </div>
-            </article>
-            <article class="card">
-              <div class="card-title">Error Rate</div>
-              <div class="stat-value">0.21 %</div>
-              <div class="stat-pill-row">
-                <span class="pill pill--warning">Degraded zone</span>
-                <span class="pill">2 regions in watchlist</span>
+
+              <div class="lab-body">
+                <!-- Tab 1: toggles -->
+                <div class="tab-panel is-active" data-tab-panel="signals">
+                  <div class="toggle-row">
+                    <button
+                      class="toggle is-on"
+                      data-toggle
+                      role="switch"
+                      aria-checked="true"
+                    >
+                      <span class="toggle-label">Auto-balance</span>
+                      <span class="toggle-track">
+                        <span class="toggle-knob"></span>
+                      </span>
+                    </button>
+                    <button
+                      class="toggle"
+                      data-toggle
+                      role="switch"
+                      aria-checked="false"
+                    >
+                      <span class="toggle-label">Noise gate</span>
+                      <span class="toggle-track">
+                        <span class="toggle-knob"></span>
+                      </span>
+                    </button>
+                    <button
+                      class="toggle"
+                      data-toggle
+                      role="switch"
+                      aria-checked="false"
+                    >
+                      <span class="toggle-label">Loopback</span>
+                      <span class="toggle-track">
+                        <span class="toggle-knob"></span>
+                      </span>
+                    </button>
+                  </div>
+                  <p class="lab-note">
+                    Tap switches or press Space/Enter to flip system signals.
+                  </p>
+                </div>
+
+                <!-- Tab 2: radio group -->
+                <div class="tab-panel" data-tab-panel="modes">
+                  <div class="chip-row" role="radiogroup" aria-label="Profile mode">
+                    <button
+                      class="chip-radio is-active"
+                      data-radio="profile"
+                      data-value="safe"
+                      role="radio"
+                      aria-checked="true"
+                    >
+                      <span class="radio-indicator"></span>
+                      Safe
+                    </button>
+                    <button
+                      class="chip-radio"
+                      data-radio="profile"
+                      data-value="balanced"
+                      role="radio"
+                      aria-checked="false"
+                    >
+                      <span class="radio-indicator"></span>
+                      Balanced
+                    </button>
+                    <button
+                      class="chip-radio"
+                      data-radio="profile"
+                      data-value="max"
+                      role="radio"
+                      aria-checked="false"
+                    >
+                      <span class="radio-indicator"></span>
+                      Max
+                    </button>
+                  </div>
+                  <p class="lab-note">
+                    Radio chips act as a single-select profile for the telemetry view.
+                  </p>
+                </div>
+
+                <!-- Tab 3: checkbox chips -->
+                <div class="tab-panel" data-tab-panel="prefs">
+                  <div class="chip-row">
+                    <button
+                      class="chip-check is-on"
+                      data-check
+                      role="checkbox"
+                      aria-checked="true"
+                    >
+                      <span class="check-indicator"></span>
+                      Mirror to standby
+                    </button>
+                    <button
+                      class="chip-check"
+                      data-check
+                      role="checkbox"
+                      aria-checked="false"
+                    >
+                      <span class="check-indicator"></span>
+                      Record trail
+                    </button>
+                    <button
+                      class="chip-check"
+                      data-check
+                      role="checkbox"
+                      aria-checked="false"
+                    >
+                      <span class="check-indicator"></span>
+                      Haptic ping
+                    </button>
+                  </div>
+                  <p class="lab-note">
+                    Checkbox chips can be toggled independently for pure fidget value.
+                  </p>
+                </div>
               </div>
-            </article>
+
+              <p class="lab-note">
+                Controls share the same tokens as the cards and tables, so contrast and focus treatments stay consistent.
+              </p>
+            </div>
           </section>
 
           <!-- Table -->
@@ -1146,6 +1302,21 @@
                   <span class="legend-dot legend-dot--err"></span> Critical
                 </span>
               </div>
+            </div>
+
+            <div class="table-filters chip-row" aria-label="Table controls">
+              <button class="chip-check is-on" data-check role="checkbox" aria-checked="true">
+                <span class="check-indicator"></span>
+                Autosort
+              </button>
+              <button class="chip-check" data-check role="checkbox" aria-checked="false">
+                <span class="check-indicator"></span>
+                Show alerts only
+              </button>
+              <button class="chip-check" data-check role="checkbox" aria-checked="false">
+                <span class="check-indicator"></span>
+                Lock layout
+              </button>
             </div>
 
             <div class="table-scroll">
@@ -1186,149 +1357,13 @@
             </div>
           </section>
 
-          <!-- Interaction playground / fidget area -->
-          <section class="playground">
-            <div class="playground-header">
-              <div class="playground-title">Interaction Playground</div>
-              <div class="playground-tabs" role="tablist">
-                <button class="tab is-active" data-tab="signals" role="tab" aria-selected="true">
-                  Signals
-                </button>
-                <button class="tab" data-tab="modes" role="tab" aria-selected="false">
-                  Modes
-                </button>
-                <button class="tab" data-tab="prefs" role="tab" aria-selected="false">
-                  Prefs
-                </button>
-              </div>
-            </div>
-
-            <div class="playground-body">
-              <!-- Tab 1: toggles -->
-              <div class="tab-panel is-active" data-tab-panel="signals">
-                <div class="toggle-row">
-                  <button
-                    class="toggle is-on"
-                    data-toggle
-                    role="switch"
-                    aria-checked="true"
-                  >
-                    <span class="toggle-label">Auto-balance</span>
-                    <span class="toggle-track">
-                      <span class="toggle-knob"></span>
-                    </span>
-                  </button>
-                  <button
-                    class="toggle"
-                    data-toggle
-                    role="switch"
-                    aria-checked="false"
-                  >
-                    <span class="toggle-label">Noise gate</span>
-                    <span class="toggle-track">
-                      <span class="toggle-knob"></span>
-                    </span>
-                  </button>
-                  <button
-                    class="toggle"
-                    data-toggle
-                    role="switch"
-                    aria-checked="false"
-                  >
-                    <span class="toggle-label">Loopback</span>
-                    <span class="toggle-track">
-                      <span class="toggle-knob"></span>
-                    </span>
-                  </button>
-                </div>
-                <p class="playground-note">
-                  Tap switches and watch the toggles flip between states.
-                </p>
-              </div>
-
-              <!-- Tab 2: radio group -->
-              <div class="tab-panel" data-tab-panel="modes">
-                <div class="chip-row" role="radiogroup" aria-label="Profile mode">
-                  <button
-                    class="chip-radio is-active"
-                    data-radio="profile"
-                    data-value="safe"
-                    role="radio"
-                    aria-checked="true"
-                  >
-                    <span class="radio-indicator"></span>
-                    Safe
-                  </button>
-                  <button
-                    class="chip-radio"
-                    data-radio="profile"
-                    data-value="balanced"
-                    role="radio"
-                    aria-checked="false"
-                  >
-                    <span class="radio-indicator"></span>
-                    Balanced
-                  </button>
-                  <button
-                    class="chip-radio"
-                    data-radio="profile"
-                    data-value="max"
-                    role="radio"
-                    aria-checked="false"
-                  >
-                    <span class="radio-indicator"></span>
-                    Max
-                  </button>
-                </div>
-                <p class="playground-note">
-                  Radio chips act as a single-select mode profile.
-                </p>
-              </div>
-
-              <!-- Tab 3: checkbox chips -->
-              <div class="tab-panel" data-tab-panel="prefs">
-                <div class="chip-row">
-                  <button
-                    class="chip-check is-on"
-                    data-check
-                    role="checkbox"
-                    aria-checked="true"
-                  >
-                    <span class="check-indicator"></span>
-                    Mirror to standby
-                  </button>
-                  <button
-                    class="chip-check"
-                    data-check
-                    role="checkbox"
-                    aria-checked="false"
-                  >
-                    <span class="check-indicator"></span>
-                    Record trail
-                  </button>
-                  <button
-                    class="chip-check"
-                    data-check
-                    role="checkbox"
-                    aria-checked="false"
-                  >
-                    <span class="check-indicator"></span>
-                    Haptic ping
-                  </button>
-                </div>
-                <p class="playground-note">
-                  Checkbox chips can be toggled independently for pure fidget value.
-                </p>
-              </div>
-            </div>
-          </section>
         </div>
       </main>
     </div>
   </template>
 
   <!-- Pako CDN for compression -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" integrity="" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" crossorigin="anonymous"></script>
 
   <script>
     function humanizeId(id) {
@@ -1371,22 +1406,22 @@
         {
           "--surface-base": "#050814",
           "--surface-raised": "#0b1220",
-          "--surface-highest": "#111827",
-          "--border-highlight": "#38bdf8",
-          "--text-primary": "#e5e7eb",
-          "--text-muted": "#9ca3af",
+          "--surface-highest": "#162032",
+          "--border-highlight": "#5ee0ff",
+          "--text-primary": "#f8fafc",
+          "--text-muted": "#cbd5e1",
           "--text-inverted": "#020617",
-          "--accent-primary": "#22d3ee",
-          "--accent-secondary": "#38bdf8",
-          "--accent-tertiary": "#a3d8ff",
-          "--accent-warning": "#facc15",
+          "--accent-primary": "#4dd5ff",
+          "--accent-secondary": "#7ae7ff",
+          "--accent-tertiary": "#c4e7ff",
+          "--accent-warning": "#fde68a",
           "--shadow-elevation": "0 18px 36px rgba(15, 23, 42, 0.9)"
         }
       ),
-      "crip-candy": createTheme(
-        "crip-candy",
+      "crisp-candy": createTheme(
+        "crisp-candy",
         {
-          label: "Crip Candy",
+          label: "Crisp Candy",
           tag: "Neon Pastel",
           fonts: {
             imports: [
@@ -1401,20 +1436,20 @@
         },
         {
           "--surface-base": "#11071f",
-          "--surface-raised": "#1f1035",
-          "--surface-highest": "#2a1745",
-          "--border-subtle": "#311c53",
-          "--border-strong": "#4b2a7a",
-          "--border-highlight": "#fdffc2",
-          "--text-primary": "#111827",
-          "--text-muted": "#4b5563",
-          "--text-inverted": "#f9fafb",
-          "--accent-primary": "#ff76ce",
-          "--accent-secondary": "#94ffd8",
-          "--accent-tertiary": "#a3d8ff",
-          "--accent-success": "#94ffd8",
-          "--accent-warning": "#fdffc2",
-          "--accent-danger": "#f97373",
+          "--surface-raised": "#1a0f30",
+          "--surface-highest": "#241441",
+          "--border-subtle": "#3a1f5c",
+          "--border-strong": "#5b3490",
+          "--border-highlight": "#fff3c7",
+          "--text-primary": "#f8f7ff",
+          "--text-muted": "#d8d7ff",
+          "--text-inverted": "#0b0b14",
+          "--accent-primary": "#ff7ad1",
+          "--accent-secondary": "#8affdd",
+          "--accent-tertiary": "#d0f1ff",
+          "--accent-success": "#8affdd",
+          "--accent-warning": "#fff3c7",
+          "--accent-danger": "#ff8fa3",
           "--radius-xs": "4px",
           "--radius-s": "10px",
           "--radius-m": "14px",
@@ -1685,43 +1720,74 @@ OUTPUT
       if (!shellRoot) return;
 
       // Tabs
-      const tabs = shellRoot.querySelectorAll("[data-tab]");
-      const panels = shellRoot.querySelectorAll("[data-tab-panel]");
-      tabs.forEach((tab) => {
-        tab.addEventListener("click", () => {
-          const id = tab.getAttribute("data-tab");
-          tabs.forEach((t) => {
-            const active = t === tab;
-            t.classList.toggle("is-active", active);
-            t.setAttribute("aria-selected", active ? "true" : "false");
-          });
-          panels.forEach((panel) => {
-            const panelId = panel.getAttribute("data-tab-panel");
-            panel.classList.toggle("is-active", panelId === id);
-          });
+      const tabs = Array.from(shellRoot.querySelectorAll("[data-tab]"));
+      const panels = Array.from(shellRoot.querySelectorAll("[data-tab-panel]"));
+      const activateTab = (tab) => {
+        const id = tab.getAttribute("data-tab");
+        tabs.forEach((t) => {
+          const active = t === tab;
+          t.classList.toggle("is-active", active);
+          t.setAttribute("aria-selected", active ? "true" : "false");
+        });
+        panels.forEach((panel) => {
+          const panelId = panel.getAttribute("data-tab-panel");
+          panel.classList.toggle("is-active", panelId === id);
+        });
+      };
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener("click", () => activateTab(tab));
+        tab.addEventListener("keydown", (evt) => {
+          const { key } = evt;
+          if (key === " " || key === "Enter") {
+            evt.preventDefault();
+            activateTab(tab);
+            return;
+          }
+          if (key === "ArrowRight" || key === "ArrowLeft") {
+            evt.preventDefault();
+            const dir = key === "ArrowRight" ? 1 : -1;
+            const next = tabs[(index + dir + tabs.length) % tabs.length];
+            next?.focus();
+            if (next) activateTab(next);
+          }
         });
       });
 
       // Toggles
       const toggles = shellRoot.querySelectorAll("[data-toggle]");
       toggles.forEach((btn) => {
-        btn.addEventListener("click", () => {
+        const flip = () => {
           const isOn = btn.classList.toggle("is-on");
           btn.setAttribute("aria-checked", isOn ? "true" : "false");
+        };
+        btn.addEventListener("click", flip);
+        btn.addEventListener("keydown", (evt) => {
+          if (evt.key === " " || evt.key === "Enter") {
+            evt.preventDefault();
+            flip();
+          }
         });
       });
 
       // Checkbox chips
       const checks = shellRoot.querySelectorAll("[data-check]");
       checks.forEach((btn) => {
-        btn.addEventListener("click", () => {
+        const flip = () => {
           const isOn = btn.classList.toggle("is-on");
           btn.setAttribute("aria-checked", isOn ? "true" : "false");
+        };
+        btn.addEventListener("click", flip);
+        btn.addEventListener("keydown", (evt) => {
+          if (evt.key === " " || evt.key === "Enter") {
+            evt.preventDefault();
+            flip();
+          }
         });
       });
 
       // Radio chip groups
-      const radios = shellRoot.querySelectorAll("[data-radio]");
+      const radios = Array.from(shellRoot.querySelectorAll("[data-radio]"));
       const groups = {};
       radios.forEach((btn) => {
         const group = btn.getAttribute("data-radio");
@@ -1729,13 +1795,30 @@ OUTPUT
         groups[group].push(btn);
       });
       Object.values(groups).forEach((groupBtns) => {
-        groupBtns.forEach((btn) => {
-          btn.addEventListener("click", () => {
-            groupBtns.forEach((b) => {
-              const active = b === btn;
-              b.classList.toggle("is-active", active);
-              b.setAttribute("aria-checked", active ? "true" : "false");
-            });
+        const selectBtn = (btn) => {
+          groupBtns.forEach((b) => {
+            const active = b === btn;
+            b.classList.toggle("is-active", active);
+            b.setAttribute("aria-checked", active ? "true" : "false");
+          });
+        };
+
+        groupBtns.forEach((btn, index) => {
+          btn.addEventListener("click", () => selectBtn(btn));
+          btn.addEventListener("keydown", (evt) => {
+            const { key } = evt;
+            if (key === " " || key === "Enter") {
+              evt.preventDefault();
+              selectBtn(btn);
+              return;
+            }
+            if (key === "ArrowRight" || key === "ArrowLeft") {
+              evt.preventDefault();
+              const dir = key === "ArrowRight" ? 1 : -1;
+              const next = groupBtns[(index + dir + groupBtns.length) % groupBtns.length];
+              next?.focus();
+              if (next) selectBtn(next);
+            }
           });
         });
       });
@@ -1785,17 +1868,40 @@ OUTPUT
       });
     }
 
+    function textToBase64(text) {
+      return btoa(
+        encodeURIComponent(text).replace(/%([0-9A-F]{2})/g, (_m, p1) =>
+          String.fromCharCode("0x" + p1)
+        )
+      );
+    }
+
+    function base64ToText(b64) {
+      return decodeURIComponent(
+        atob(b64)
+          .split("")
+          .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
+          .join("")
+      );
+    }
+
     function encodeToUrl(text) {
-      if (!window.pako) return;
       try {
-        const compressed = window.pako.deflate(text);
-        let binary = "";
-        compressed.forEach((b) => {
-          binary += String.fromCharCode(b);
-        });
-        const base64 = btoa(binary);
         const url = new URL(window.location.href);
-        url.searchParams.set("t", base64);
+        let payload;
+
+        if (window.pako) {
+          const compressed = window.pako.deflate(text);
+          let binary = "";
+          compressed.forEach((b) => {
+            binary += String.fromCharCode(b);
+          });
+          payload = "p:" + btoa(binary);
+        } else {
+          payload = "u:" + textToBase64(text);
+        }
+
+        url.searchParams.set("t", payload);
         window.history.replaceState(null, "", url.toString());
       } catch (e) {
         console.error("Encoding to URL failed", e);
@@ -1803,17 +1909,42 @@ OUTPUT
     }
 
     function decodeFromUrl() {
-      if (!window.pako) return null;
       try {
         const url = new URL(window.location.href);
-        const base64 = url.searchParams.get("t");
-        if (!base64) return null;
-        const binary = atob(base64);
-        const bytes = new Uint8Array(
-          binary.split("").map((c) => c.charCodeAt(0))
-        );
-        const text = window.pako.inflate(bytes, { to: "string" });
-        return text;
+        const raw = url.searchParams.get("t");
+        if (!raw) return null;
+
+        const isCompressed = raw.startsWith("p:");
+        const isUncompressed = raw.startsWith("u:");
+        const payload = isCompressed || isUncompressed ? raw.slice(2) : raw;
+
+        if (isCompressed) {
+          if (!window.pako) return null;
+          const binary = atob(payload);
+          const bytes = new Uint8Array(
+            binary.split("").map((c) => c.charCodeAt(0))
+          );
+          return window.pako.inflate(bytes, { to: "string" });
+        }
+
+        if (isUncompressed) {
+          return base64ToText(payload);
+        }
+
+        // Legacy handling: attempt pako first, fall back to plain base64
+        if (window.pako) {
+          try {
+            const binary = atob(payload);
+            const bytes = new Uint8Array(
+              binary.split("").map((c) => c.charCodeAt(0))
+            );
+            return window.pako.inflate(bytes, { to: "string" });
+          } catch (e) {
+            console.warn("Legacy pako decode failed, trying base64", e);
+          }
+        }
+
+        return base64ToText(payload);
       } catch (e) {
         console.error("Decoding from URL failed", e);
         return null;

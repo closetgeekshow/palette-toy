@@ -1,0 +1,3 @@
+# CSS Layering + Modern Features for DRY Tokens
+
+Use `@layer` to separate reset, framework, and token overrides so variable scopes stay predictable and easy to diff. Place framework/CDN layers lowest, shared tokens + utilities in the middle, and per-theme tweaks at the top. Pair layers with `@property` for typed color/number tokens, `color-mix()` for subtle derivations, and `:where()` selectors to lower specificity and reduce overrides. Leverage `@supports` to gate modern features, and `prefers-color-scheme` to auto-swap base surfaces while keeping token names stable. Custom properties remain single sources of truth, with layers preventing accidental clashes.
