@@ -177,28 +177,6 @@
       min-height: 100vh;
     }
 
-    :root {
-      scrollbar-width: thin;
-      scrollbar-color: var(--border-strong) var(--surface-raised);
-    }
-
-    *::-webkit-scrollbar {
-      width: 10px;
-      height: 10px;
-    }
-
-    *::-webkit-scrollbar-track {
-      background: var(--surface-raised);
-      border-radius: var(--radius-s);
-    }
-
-    *::-webkit-scrollbar-thumb {
-      background: var(--border-strong);
-      border-radius: var(--radius-s);
-      border: 2px solid var(--surface-raised);
-      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--surface-base) 40%, transparent);
-    }
-
     .pad-2 {
       padding: var(--space-2);
     }
@@ -796,33 +774,21 @@
     }
 
     /* ------------------------------------------
-       3. Interaction lab woven into the dashboard
+       3. Interaction playground (tabs, toggles, chips)
        ------------------------------------------ */
 
-    .experience-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 1.25fr);
-      gap: var(--space-3);
-      align-items: stretch;
-    }
-
-    .stats-panel,
-    .control-lab {
+    .playground {
       background: color-mix(in srgb, var(--surface-raised) 92%, var(--page-bg-alt) 8%);
       border-radius: var(--radius-m);
       border: 1px solid var(--border-subtle);
-      min-width: 0;
-      box-shadow: var(--shadow-elevation);
       padding: var(--space-3);
-    }
-
-    .control-lab {
       display: flex;
       flex-direction: column;
       gap: var(--space-2);
+      min-width: 0;
     }
 
-    .lab-header {
+    .playground-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -830,14 +796,14 @@
       flex-wrap: wrap;
     }
 
-    .lab-title {
+    .playground-title {
       font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.16em;
       color: var(--text-muted);
     }
 
-    .lab-tabs {
+    .playground-tabs {
       display: flex;
       gap: var(--space-1);
       flex-wrap: wrap;
@@ -865,7 +831,7 @@
       color: var(--text-primary);
     }
 
-    .lab-body {
+    .playground-body {
       display: grid;
       gap: var(--space-2);
       margin-top: var(--space-2);
@@ -1014,7 +980,7 @@
       box-shadow: var(--shadow-glow-dot);
     }
 
-    .lab-note {
+    .playground-note {
       font-size: 0.7rem;
       color: var(--text-muted);
     }
@@ -1022,12 +988,6 @@
     /* ------------------------------------------
        4. Responsive tweaks for mobile
        ------------------------------------------ */
-
-    @media (max-width: 1100px) {
-      .experience-grid {
-        grid-template-columns: 1fr;
-      }
-    }
 
     @media (max-width: 768px) {
       body {
