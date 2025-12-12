@@ -4,41 +4,112 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Palette Token Demo with URL-Encoded Editor</title>
+  <script>
+    const TOKEN_MANIFEST = {
+      surfaces: {
+        "--surface-base": { default: "#0b1120", required: true },
+        "--surface-raised": { default: "#111827", required: true },
+        "--surface-highest": { default: "#1f2937", required: true }
+      },
+      borders: {
+        "--border-subtle": { default: "#1f2933", required: true },
+        "--border-strong": { default: "#4b5563", required: true },
+        "--border-highlight": {
+          default: "#f5d97a",
+          required: false,
+          derive: "A bright accent border"
+        }
+      },
+      text: {
+        "--text-primary": { default: "#f9fafb", required: true },
+        "--text-muted": { default: "#9ca3af", required: true },
+        "--text-inverted": { default: "#020617", required: true }
+      },
+      accents: {
+        "--accent-primary": { default: "#22d3ee", required: true },
+        "--accent-secondary": { default: "#38bdf8", required: false },
+        "--accent-tertiary": { default: "#a3d8ff", required: false },
+        "--accent-success": { default: "#4ade80", required: true },
+        "--accent-warning": { default: "#facc15", required: false },
+        "--accent-danger": { default: "#f97373", required: true }
+      },
+      radii: {
+        "--radius-xs": { default: "2px", required: false, derive: "Sharp edge" },
+        "--radius-s": { default: "6px", required: false },
+        "--radius-m": { default: "10px", required: false },
+        "--radius-l": { default: "16px", required: false },
+        "--radius-pill": {
+          default: "999px",
+          required: false,
+          derive: "Pill buttons"
+        }
+      },
+      shadows: {
+        "--shadow-elevation": {
+          default: "0 20px 40px rgba(0, 0, 0, 0.45)",
+          required: true
+        },
+        "--shadow-glow-accent": {
+          default: "0 0 16px rgba(56, 189, 248, 0.55)",
+          required: false,
+          derive: "Accent outline glow"
+        },
+        "--shadow-glow-dot": {
+          default: "0 0 8px rgba(148, 163, 184, 0.6)",
+          required: false
+        },
+        "--shadow-glow-meter": {
+          default: "0 0 12px rgba(255, 255, 255, 0.3)",
+          required: false
+        }
+      }
+    };
+
+    const FONT_VARIABLES = [
+      "--font-logo",
+      "--font-heading",
+      "--font-body",
+      "--font-code"
+    ];
+
+    const TOKEN_METADATA = Object.entries(TOKEN_MANIFEST).flatMap(
+      ([groupName, tokens]) =>
+        Object.entries(tokens).map(([name, meta]) => ({
+          name,
+          group: groupName,
+          required: Boolean(meta.required),
+          default: meta.default,
+          derive: meta.derive
+        }))
+    );
+
+    const BASE_TOKENS = Object.fromEntries(
+      TOKEN_METADATA.map((meta) => [meta.name, meta.default])
+    );
+
+    const REQUIRED_TOKENS = TOKEN_METADATA.filter((meta) => meta.required).map(
+      (meta) => meta.name
+    );
+    const OPTIONAL_TOKENS = TOKEN_METADATA.filter((meta) => !meta.required).map(
+      (meta) => meta.name
+    );
+
+    function renderBaseTokens(target = document.getElementById("base-token-style")) {
+      if (!target) {
+        target = document.createElement("style");
+        target.id = "base-token-style";
+        document.head.prepend(target);
+      }
+      const lines = TOKEN_METADATA.map(
+        (meta) => `  ${meta.name}: ${meta.default};`
+      );
+      target.textContent = `:root {\n${lines.join("\n")}\n}`;
+    }
+
+    renderBaseTokens();
+  </script>
   <style>
-    /* ------------------------------------------
-       1. Base token namespace (fallbacks)
-       ------------------------------------------ */
     :root {
-      /* Core surfaces (theme-overridable) */
-      --surface-base: #0b1120;
-      --surface-raised: #111827;
-      --surface-highest: #1f2937;
-
-      /* Core borders (theme-overridable) */
-      --border-subtle: #1f2933;
-      --border-strong: #4b5563;
-      --border-highlight: #f5d97a;
-
-      /* Core text (theme-overridable) */
-      --text-primary: #f9fafb;
-      --text-muted: #9ca3af;
-      --text-inverted: #020617;
-
-      /* Accents (theme-overridable) */
-      --accent-primary: #22d3ee;
-      --accent-secondary: #38bdf8;
-      --accent-tertiary: #a3d8ff;
-      --accent-success: #4ade80;
-      --accent-warning: #facc15;
-      --accent-danger: #f97373;
-
-      /* Radius tokens (theme-overridable) */
-      --radius-xs: 2px;
-      --radius-s: 6px;
-      --radius-m: 10px;
-      --radius-l: 16px;
-      --radius-pill: 999px;
-
       /* Spacing scale */
       --space-0-5: 2px;
       --space-1: 4px;
@@ -50,16 +121,14 @@
       --space-5: 24px;
       --space-6: 32px;
 
-      /* Shadows */
-      --shadow-elevation: 0 20px 40px rgba(0, 0, 0, 0.45);
-      --shadow-glow-accent: 0 0 16px rgba(56, 189, 248, 0.55);
-      --shadow-glow-dot: 0 0 8px rgba(148, 163, 184, 0.6);
-      --shadow-glow-meter: 0 0 12px rgba(255, 255, 255, 0.3);
-
       /* Fonts */
-      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      --font-safe-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-safe-code: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
         "Liberation Mono", "Courier New", monospace;
+      --font-body: var(--font-safe-body);
+      --font-heading: var(--font-body);
+      --font-logo: var(--font-heading);
+      --font-code: var(--font-safe-code);
 
       /* Page + editor aliases */
       --page-bg: #020617;
@@ -83,7 +152,7 @@
       --editor-textarea-border: rgba(148, 163, 184, 0.5);
       --editor-error-text: #fca5a5;
 
-      --panel-border: rgba(148, 163, 184, 0.3);
+      --panel-border: color-mix(in srgb, var(--border-subtle) 65%, transparent);
       --meter-bg: rgba(15, 23, 42, 0.7);
       --meter-border: rgba(148, 163, 184, 0.4);
     }
@@ -101,11 +170,41 @@
       padding: var(--space-6);
       background: var(--page-bg);
       color: var(--page-text);
-      font-family: var(--font-sans);
+      font-family: var(--font-body, var(--font-safe-body));
       display: flex;
       flex-direction: column;
       gap: var(--space-4);
       min-height: 100vh;
+    }
+
+    .pad-2 {
+      padding: var(--space-2);
+    }
+
+    .pad-3 {
+      padding: var(--space-3);
+    }
+
+    .pad-4 {
+      padding: var(--space-4);
+    }
+
+    .round-s {
+      border-radius: var(--radius-s);
+    }
+
+    .round-m {
+      border-radius: var(--radius-m);
+    }
+
+    .round-l {
+      border-radius: var(--radius-l);
+    }
+
+    .surface-panel {
+      background: var(--surface-raised);
+      border: 1px solid var(--panel-border);
+      box-shadow: var(--shadow-elevation);
     }
 
     h1,
@@ -114,6 +213,7 @@
       margin: 0 0 var(--space-2);
       font-weight: 600;
       letter-spacing: 0.03em;
+      font-family: var(--font-heading, var(--font-body, var(--font-safe-body)));
     }
 
     .page-title {
@@ -206,7 +306,7 @@
       background: var(--editor-textarea-bg);
       color: var(--editor-text);
       padding: var(--space-2);
-      font-family: var(--font-mono);
+      font-family: var(--font-code, var(--font-safe-code));
       font-size: 0.78rem;
       line-height: 1.4;
       outline: none;
@@ -245,10 +345,6 @@
         var(--surface-base, #020617) 60%,
         var(--page-bg-alt) 100%
       );
-      padding: var(--space-4);
-      border-radius: var(--radius-l);
-      border: 1px solid var(--panel-border);
-      box-shadow: var(--shadow-elevation);
     }
 
     .theme-panel-header {
@@ -299,7 +395,6 @@
         color-mix(in srgb, var(--surface-raised) 80%, var(--page-bg-alt) 20%),
         var(--surface-base)
       );
-      padding: var(--space-4);
       border-right: 1px solid var(--border-subtle);
       display: flex;
       flex-direction: column;
@@ -312,6 +407,7 @@
       letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--text-muted);
+      font-family: var(--font-logo, var(--font-heading, var(--font-body)));
     }
 
     .sidebar-logo span {
@@ -454,7 +550,6 @@
     }
 
     .content {
-      padding: var(--space-4);
       display: grid;
       grid-template-rows: auto auto auto;
       gap: var(--space-3);
@@ -488,7 +583,7 @@
 
     .stat-value {
       font-size: 1.4rem;
-      font-family: var(--font-mono);
+      font-family: var(--font-code, var(--font-safe-code));
       color: var(--text-primary);
     }
 
@@ -548,10 +643,6 @@
     }
 
     .table-section {
-      background: color-mix(in srgb, var(--surface-raised) 90%, var(--page-bg-alt) 10%);
-      border-radius: var(--radius-m);
-      border: 1px solid var(--border-subtle);
-      padding: var(--space-3);
       display: flex;
       flex-direction: column;
       gap: var(--space-2);
@@ -669,7 +760,7 @@
     }
 
     .mono-label {
-      font-family: var(--font-mono);
+      font-family: var(--font-code, var(--font-safe-code));
       font-size: 0.7rem;
       opacity: 0.7;
       white-space: nowrap;
@@ -896,10 +987,6 @@
         padding: var(--space-3);
       }
 
-      .theme-panel {
-        padding: var(--space-3);
-      }
-
       .app-shell {
         display: flex;
         flex-direction: column;
@@ -907,7 +994,6 @@
       }
 
       .sidebar {
-        padding: var(--space-3);
         border-right: none;
         border-bottom: 1px solid var(--border-subtle);
       }
@@ -918,16 +1004,16 @@
         align-items: flex-start;
       }
 
-      .content {
+      .pad-4 {
         padding: var(--space-3);
+      }
+
+      .pad-3 {
+        padding: var(--space-2-5);
       }
 
       .cards-row {
         grid-template-columns: minmax(0, 1fr);
-      }
-
-      .table-section {
-        padding: var(--space-2);
       }
 
       .theme-shell {
@@ -972,7 +1058,7 @@
   <!-- Skeleton UI template using tokens -->
   <template id="skeleton-ui">
     <div class="app-shell">
-      <aside class="sidebar">
+      <aside class="sidebar surface-panel pad-4 round-l">
         <div class="sidebar-logo">
           CONTROL STACK
           <span>Signal Surface &amp; Token Shell</span>
@@ -1016,7 +1102,7 @@
           </div>
         </header>
 
-        <div class="content">
+        <div class="content surface-panel pad-4 round-l">
           <!-- Stats row -->
           <section class="cards-row">
             <article class="card">
@@ -1046,7 +1132,7 @@
           </section>
 
           <!-- Table -->
-          <section class="table-section">
+          <section class="table-section surface-panel pad-3 round-m">
             <div class="table-title-row">
               <div class="table-title">Channel Health</div>
               <div class="table-legend">
@@ -1245,17 +1331,47 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" integrity="" crossorigin="anonymous"></script>
 
   <script>
+    function humanizeId(id) {
+      return id
+        .replace(/[-_]+/g, " ")
+        .replace(/\b\w/g, (m) => m.toUpperCase());
+    }
+
+    function buildThemeTokens(overrides = {}) {
+      return { ...BASE_TOKENS, ...overrides };
+    }
+
+    function createTheme(id, meta = {}, overrides = {}) {
+      return {
+        label: meta.label || humanizeId(id),
+        tag: meta.tag || "Theme",
+        fonts: meta.fonts,
+        tokens: buildThemeTokens(overrides)
+      };
+    }
+
     // Default theme configuration: meta + tokens in one object
     const defaultThemeConfig = {
-      "control-room-cool": {
-        label: "Control Room Cool",
-        tag: "NOC / Starship",
-        tokens: {
+      "control-room-cool": createTheme(
+        "control-room-cool",
+        {
+          label: "Control Room Cool",
+          tag: "NOC / Starship",
+          fonts: {
+            imports: [
+              "family=Space+Grotesk:wght@500;600;700",
+              "family=JetBrains+Mono:wght@500;600"
+            ],
+            logo: '"Space Grotesk", "Inter", var(--font-safe-body)',
+            heading: '"Space Grotesk", "Inter", var(--font-safe-body)',
+            body: '"Inter", "Inter Variable", var(--font-safe-body)',
+            code: '"JetBrains Mono", var(--font-safe-code)'
+          }
+        },
+        {
           "--surface-base": "#050814",
           "--surface-raised": "#0b1220",
           "--surface-highest": "#111827",
-          "--border-subtle": "#1f2933",
-          "--border-strong": "#4b5563",
           "--border-highlight": "#38bdf8",
           "--text-primary": "#e5e7eb",
           "--text-muted": "#9ca3af",
@@ -1263,21 +1379,27 @@
           "--accent-primary": "#22d3ee",
           "--accent-secondary": "#38bdf8",
           "--accent-tertiary": "#a3d8ff",
-          "--accent-success": "#4ade80",
           "--accent-warning": "#facc15",
-          "--accent-danger": "#f97373",
-          "--radius-xs": "2px",
-          "--radius-s": "6px",
-          "--radius-m": "10px",
-          "--radius-l": "16px",
-          "--radius-pill": "999px",
           "--shadow-elevation": "0 18px 36px rgba(15, 23, 42, 0.9)"
         }
-      },
-      "crip-candy": {
-        label: "Crip Candy",
-        tag: "Neon Pastel",
-        tokens: {
+      ),
+      "crip-candy": createTheme(
+        "crip-candy",
+        {
+          label: "Crip Candy",
+          tag: "Neon Pastel",
+          fonts: {
+            imports: [
+              "family=Plus+Jakarta+Sans:wght@500;600;700",
+              "family=JetBrains+Mono:wght@500;600"
+            ],
+            logo: '"Plus Jakarta Sans", "Inter", var(--font-safe-body)',
+            heading: '"Plus Jakarta Sans", var(--font-safe-body)',
+            body: '"Plus Jakarta Sans", var(--font-safe-body)',
+            code: '"JetBrains Mono", var(--font-safe-code)'
+          }
+        },
+        {
           "--surface-base": "#11071f",
           "--surface-raised": "#1f1035",
           "--surface-highest": "#2a1745",
@@ -1295,16 +1417,28 @@
           "--accent-danger": "#f97373",
           "--radius-xs": "4px",
           "--radius-s": "10px",
-          "--radius-m": "16px",
-          "--radius-l": "24px",
-          "--radius-pill": "999px",
-          "--shadow-elevation": "0 18px 40px rgba(24, 16, 52, 0.95)"
+          "--radius-m": "14px",
+          "--radius-l": "18px",
+          "--shadow-elevation": "0 18px 36px rgba(17, 7, 31, 0.6)"
         }
-      },
-      "luxury-gloss": {
-        label: "Luxury Gloss",
-        tag: "Black & Gold (Sharp)",
-        tokens: {
+      ),
+      "luxury-gloss": createTheme(
+        "luxury-gloss",
+        {
+          label: "Luxury Gloss",
+          tag: "Hyper Lux / Estate",
+          fonts: {
+            imports: [
+              "family=Manrope:wght@500;600;700",
+              "family=IBM+Plex+Mono:wght@500;600"
+            ],
+            logo: '"Cormorant Garamond", "Manrope", var(--font-safe-body)',
+            heading: '"Manrope", "Inter", var(--font-safe-body)',
+            body: '"Manrope", var(--font-safe-body)',
+            code: '"IBM Plex Mono", var(--font-safe-code)'
+          }
+        },
+        {
           "--surface-base": "#faf5e6",
           "--surface-raised": "#f5efe0",
           "--surface-highest": "#ffffff",
@@ -1324,19 +1458,42 @@
           "--radius-s": "3px",
           "--radius-m": "6px",
           "--radius-l": "10px",
-          "--radius-pill": "999px",
           "--shadow-elevation": "0 12px 32px rgba(0, 0, 0, 0.25)"
         }
-      }
+      )
     };
 
-    // Default style-generator prompt (updated radius tokens, not dark-only)
-    const defaultStyleGeneratorPrompt = `You are a fast UI design assistant optimized for small, fast models (ChatGPT 5 Mini / Gemini 2.5 Flash class).
+    function buildStyleGeneratorPrompt(themeIdeas) {
+      const ideaLines =
+        themeIdeas && themeIdeas.length > 0
+          ? themeIdeas.map((idea) => `- ${idea}`).join("\n")
+          : "- (Add your own THEME IDEAS here; do not auto-generate.)";
+      const tokenPropertyLines = TOKEN_METADATA.map(
+        (meta) => `            "${meta.name}": { "type": "string" }`
+      ).join(",\n");
+      const requiredTokenLines = REQUIRED_TOKENS.map(
+        (token) => `            "${token}"`
+      ).join(",\n");
+      const optionalTokenLines = TOKEN_METADATA.filter((meta) => !meta.required)
+        .map((meta) => {
+          const derive = meta.derive ? `; ${meta.derive}` : "";
+          return `- ${meta.name} (default ${meta.default}${derive ? `, ${derive}` : ""})`;
+        })
+        .join("\n");
+      const fontVarList = FONT_VARIABLES.join(", ");
 
-Your task: generate ONLY a JSON object containing 3–5 themes for a control-room style dashboard. Themes MAY be light, dark, or mixed, but must maintain good contrast and usability.
+      return `You are a fast UI design assistant optimized for small, fast models (ChatGPT 5 Mini / Gemini 2.5 Flash class).
 
-JSON SCHEMA (for validation, do not return this in your answer)
---------------------------------------------------------------
+THEME IDEAS
+-----------
+${ideaLines}
+
+TASK
+----
+Generate ONLY a JSON object keyed by theme IDs for ALL THEME IDEAS above (no extras). Themes MAY be light, dark, or mixed, but must maintain clear visibility of text and objects on every surface.
+
+JSON SCHEMA (conceptual, do not return this in your answer)
+----------------------------------------------------------
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "ThemeConfigMap",
@@ -1347,104 +1504,60 @@ JSON SCHEMA (for validation, do not return this in your answer)
       "properties": {
         "label": { "type": "string" },
         "tag":   { "type": "string" },
+        "fonts": {
+          "type": "object",
+          "properties": {
+            "imports": { "type": "array", "items": { "type": "string" } },
+            "logo":    { "type": "string" },
+            "heading": { "type": "string" },
+            "body":    { "type": "string" },
+            "code":    { "type": "string" }
+          },
+          "required": ["body"],
+          "additionalProperties": false
+        },
         "tokens": {
           "type": "object",
           "properties": {
-            "--surface-base":    { "type": "string" },
-            "--surface-raised":  { "type": "string" },
-            "--surface-highest": { "type": "string" },
-
-            "--border-subtle":    { "type": "string" },
-            "--border-strong":    { "type": "string" },
-            "--border-highlight": { "type": "string" },
-
-            "--text-primary":   { "type": "string" },
-            "--text-muted":     { "type": "string" },
-            "--text-inverted":  { "type": "string" },
-
-            "--accent-primary":   { "type": "string" },
-            "--accent-secondary": { "type": "string" },
-            "--accent-tertiary":  { "type": "string" },
-
-            "--accent-success": { "type": "string" },
-            "--accent-warning": { "type": "string" },
-            "--accent-danger":  { "type": "string" },
-
-            "--radius-xs":   { "type": "string" },
-            "--radius-s":    { "type": "string" },
-            "--radius-m":    { "type": "string" },
-            "--radius-l":    { "type": "string" },
-            "--radius-pill": { "type": "string" },
-
-            "--shadow-elevation": { "type": "string" }
+${tokenPropertyLines}
           },
           "required": [
-            "--surface-base",
-            "--surface-raised",
-            "--surface-highest",
-            "--border-subtle",
-            "--border-strong",
-            "--border-highlight",
-            "--text-primary",
-            "--text-muted",
-            "--text-inverted",
-            "--accent-primary",
-            "--accent-secondary",
-            "--accent-tertiary",
-            "--accent-success",
-            "--accent-warning",
-            "--accent-danger",
-            "--radius-xs",
-            "--radius-s",
-            "--radius-m",
-            "--radius-l",
-            "--radius-pill",
-            "--shadow-elevation"
+${requiredTokenLines}
           ],
           "additionalProperties": false
         }
       },
-      "required": ["label", "tag", "tokens"],
+      "required": ["label", "tokens"],
       "additionalProperties": false
     }
   },
   "additionalProperties": false
 }
 
-VARIABLE DESCRIPTIONS
----------------------
---surface-base        : main canvas / background surface.
---surface-raised      : panels, cards, secondary shells.
---surface-highest     : headers, overlays, elevated surfaces.
---border-subtle       : low-emphasis borders and dividers.
---border-strong       : strong borders and focus rings.
---border-highlight    : accent borders and selections.
---text-primary        : main body text on primary surfaces.
---text-muted          : subdued labels and meta text.
---text-inverted       : text on strong accent or contrasting surfaces.
---accent-primary      : main brand / action accent.
---accent-secondary    : secondary accent for chrome.
---accent-tertiary     : optional third accent.
---accent-success      : success / nominal state.
---accent-warning      : warning / degraded state.
---accent-danger       : error / critical state.
---radius-xs           : sharpest radius for tiny elements / indicators.
---radius-s            : small radius for compact controls.
---radius-m            : medium radius for cards and larger controls.
---radius-l            : large radius for outer shells / panels.
---radius-pill         : full pill radius for chips, toggles, nav dots.
---shadow-elevation    : main elevation shadow for shells.
+OPTIONAL TOKEN FALLBACKS
+------------------------
+${optionalTokenLines || "- (none)"}
+- Omitted optional tokens fall back to defaults or derive from required tokens in the UI shell.
+- Radius tokens may be sharp (0–4px) or pill-shaped; mix radii to make controls feel like a fidget-friendly surface.
+- Border/text/accent choices must keep objects legible on their surfaces.
 
-REQUIREMENTS
-------------
-- Output MUST be a single JSON object that is a VALID INSTANCE of the schema above.
-- Do NOT include the schema itself in the output.
-- No comments, no trailing commas, no prose.
-- Use hex or rgba color strings for all color values.
-- Ensure sufficient contrast between text and background for each theme.
-- Make each theme cohesive and stylistically distinct (e.g. cool technical, neon pastel, luxury gloss, muted industrial).
+FONT RULES
+----------
+- Font stacks are supplied through CSS variables ${fontVarList}; only --font-body is required.
+- Each theme may optionally declare fonts.imports (Google Fonts CSS v2 family segments). Imports are deduped into one stylesheet tag.
+- Fallback chain: heading → body, logo → heading, code → a safe monospace stack.
 
-Return only the JSON object.`;
+INTERACTION + VISIBILITY
+------------------------
+- Tabs, toggles, checkbox chips, and radio chips are built into the skeleton UI—tokens must keep them visible and tactile.
+- Colors and shadows should ensure objects on every surface remain readable and distinct.
+
+OUTPUT
+------
+- Return only the JSON object (valid to the schema above). No prose, no comments.`;
+    }
+
+    const defaultStyleGeneratorPrompt = buildStyleGeneratorPrompt([]);
 
     const textarea = document.getElementById("token-textarea");
     const editor = document.getElementById("token-editor");
@@ -1478,7 +1591,9 @@ Return only the JSON object.`;
           normalized[id] = {
             label: val.label || undefined,
             tag: val.tag || undefined,
-            tokens: val.tokens && typeof val.tokens === "object" ? val.tokens : {}
+            tokens: val.tokens && typeof val.tokens === "object" ? val.tokens : {},
+            fonts:
+              val.fonts && typeof val.fonts === "object" ? val.fonts : undefined
           };
         } else {
           // simple tokens-only map
@@ -1488,6 +1603,66 @@ Return only the JSON object.`;
         }
       });
       return normalized;
+    }
+
+    function applyFonts(panel, fonts) {
+      if (!panel || !fonts) return;
+      const bodyStack = typeof fonts.body === "string" ? fonts.body : null;
+      const headingStack =
+        typeof fonts.heading === "string" ? fonts.heading : bodyStack;
+      const logoStack =
+        typeof fonts.logo === "string" ? fonts.logo : headingStack || bodyStack;
+      const codeStack =
+        typeof fonts.code === "string" ? fonts.code : "var(--font-safe-code)";
+
+      if (bodyStack) panel.style.setProperty("--font-body", bodyStack);
+      if (headingStack) panel.style.setProperty("--font-heading", headingStack);
+      if (logoStack) panel.style.setProperty("--font-logo", logoStack);
+      if (bodyStack || headingStack || logoStack || fonts.code) {
+        panel.style.setProperty("--font-code", codeStack);
+      }
+    }
+
+    function collectFontImports(themeConfig) {
+      const imports = new Set();
+      if (!themeConfig) return imports;
+      Object.values(themeConfig).forEach((cfg) => {
+        const segments = cfg?.fonts?.imports;
+        if (Array.isArray(segments)) {
+          segments.forEach((segment) => {
+            if (typeof segment === "string" && segment.trim()) {
+              imports.add(segment.trim());
+            }
+          });
+        }
+      });
+      return imports;
+    }
+
+    function updateFontImports(themeConfig) {
+      const imports = Array.from(collectFontImports(themeConfig));
+      const head = document.querySelector("head");
+      if (!head) return;
+      let link = document.getElementById("theme-font-imports");
+
+      if (!imports.length) {
+        if (link) link.remove();
+        return;
+      }
+
+      const query = imports.join("&");
+      const href = `https://fonts.googleapis.com/css2?${query}&display=swap`;
+
+      if (!link) {
+        link = document.createElement("link");
+        link.id = "theme-font-imports";
+        link.rel = "stylesheet";
+        head.appendChild(link);
+      }
+
+      if (link.href !== href) {
+        link.href = href;
+      }
     }
 
     function applyThemes(themeConfig) {
@@ -1500,6 +1675,9 @@ Return only the JSON object.`;
         Object.entries(cfg.tokens).forEach(([key, value]) => {
           panel.style.setProperty(key, value);
         });
+        if (cfg.fonts) {
+          applyFonts(panel, cfg.fonts);
+        }
       });
     }
 
@@ -1563,12 +1741,6 @@ Return only the JSON object.`;
       });
     }
 
-    function humanizeId(id) {
-      return id
-        .replace(/[-_]+/g, " ")
-        .replace(/\b\w/g, (m) => m.toUpperCase());
-    }
-
     function rebuildPanels(themeConfig) {
       const grid = document.getElementById("themes-grid");
       const tpl = document.getElementById("skeleton-ui");
@@ -1582,7 +1754,7 @@ Return only the JSON object.`;
         const tag = cfg.tag || "Theme";
 
         const panel = document.createElement("section");
-        panel.className = "theme-panel";
+        panel.className = "theme-panel surface-panel pad-4 round-l";
         panel.setAttribute("data-theme", themeId);
 
         const header = document.createElement("div");
@@ -1669,6 +1841,7 @@ Return only the JSON object.`;
       }
       const normalized = normalizeThemeConfig(raw);
       setEditorError(false);
+      updateFontImports(normalized);
       rebuildPanels(normalized);
       applyThemes(normalized);
       debouncedEncode();
@@ -1737,6 +1910,7 @@ Return only the JSON object.`;
 
       const normalized = normalizeThemeConfig(rawThemes);
       setEditorError(false);
+      updateFontImports(normalized);
       rebuildPanels(normalized);
       applyThemes(normalized);
 
