@@ -32,6 +32,27 @@
       gap: 24px;
     }
 
+    .menu-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      margin: 0;
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--surface-panel) 85%, transparent);
+      border: 1px solid color-mix(in srgb, var(--border-strong) 65%, transparent);
+      color: var(--accent);
+      font-weight: 700;
+      text-decoration: none;
+      width: fit-content;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+
+    .menu-link:hover,
+    .menu-link:focus-visible {
+      text-decoration: underline;
+    }
+
     .panel {
       background: color-mix(in srgb, var(--surface-panel) 80%, transparent);
       border: 1px solid var(--border-strong);
@@ -95,6 +116,7 @@
   </style>
 </head>
 <body>
+  <a class="menu-link" href="menu.html">← Back to demo menu</a>
   <div class="panel">
     <h1>Radix color ramps</h1>
     <p>Everything is derived from <code>@radix-ui/colors</code> variables for fast, consistent contrast.</p>

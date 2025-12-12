@@ -21,6 +21,26 @@
       padding: 40px 28px 56px;
     }
 
+    .menu-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      margin: 0 0 16px;
+      border-radius: var(--panel-radius);
+      background: rgba(17, 24, 39, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      color: var(--accent);
+      font-weight: 700;
+      text-decoration: none;
+      width: fit-content;
+    }
+
+    .menu-link:hover,
+    .menu-link:focus-visible {
+      text-decoration: underline;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -60,6 +80,7 @@
   </style>
 </head>
 <body>
+  <a class="menu-link" href="menu.html">← Back to demo menu</a>
   <header>
     <h1>new.css skeleton</h1>
     <p>Plain HTML feels styled; custom bits only handle gradients, radii, and interactivity.</p>

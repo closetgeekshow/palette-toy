@@ -34,6 +34,27 @@
       gap: var(--size-4);
     }
 
+    .menu-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--size-2);
+      padding: var(--size-2) var(--size-3);
+      margin: 0;
+      border-radius: var(--radius-2);
+      background: color-mix(in srgb, var(--surface-high) 85%, transparent);
+      border: 1px solid color-mix(in srgb, var(--surface-higher) 65%, transparent);
+      box-shadow: var(--shadow-glow);
+      color: var(--indigo-2);
+      font-weight: 700;
+      text-decoration: none;
+      width: fit-content;
+    }
+
+    .menu-link:hover,
+    .menu-link:focus-visible {
+      text-decoration: underline;
+    }
+
     header {
       display: flex;
       justify-content: space-between;
@@ -126,6 +147,7 @@
   </style>
 </head>
 <body>
+  <a class="menu-link" href="menu.html">← Back to demo menu</a>
   <header>
     <div>
       <div class="badge">Open Props</div>

@@ -28,6 +28,27 @@
       gap: 24px;
     }
 
+    .menu-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      margin: 0;
+      border-radius: var(--sl-border-radius-medium);
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      color: var(--sl-color-primary-6);
+      font-weight: 700;
+      text-decoration: none;
+      width: fit-content;
+      box-shadow: var(--sl-shadow-large);
+    }
+
+    .menu-link:hover,
+    .menu-link:focus-visible {
+      text-decoration: underline;
+    }
+
     .panel {
       background: var(--panel-bg);
       border: 1px solid var(--panel-border);
@@ -56,6 +77,7 @@
   </style>
 </head>
 <body>
+  <a class="menu-link" href="menu.html">← Back to demo menu</a>
   <div class="panel">
     <h1>Shoelace theme tokens</h1>
     <p>Components lean on CDN themes; overrides tweak primary hue, radius, and gradients without a build step.</p>
