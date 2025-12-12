@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skeleton UI - HTM + Preact</title>
+  <style>
+    :root {
+      --surface-base: #0b1224;
+      --surface-raised: #111827;
+      --text-primary: #f8fafc;
+      --text-muted: #cbd5e1;
+      --accent: #38bdf8;
+      --accent-2: #f472b6;
+      --radius-sharp: 4px;
+      --radius-soft: 14px;
+      --radius-pill: 999px;
+      --font-body: "Inter", system-ui, sans-serif;
+      --font-code: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: var(--font-body);
+      background: linear-gradient(160deg, #0b1224, #0a0f1e);
+      color: var(--text-primary);
+    }
+
+    .menu-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      margin: 0 0 12px;
+      border-radius: var(--radius-soft);
+      background: rgba(17, 24, 39, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      color: var(--accent-primary);
+      font-weight: 700;
+      text-decoration: none;
+      width: fit-content;
+    }
+
+    .menu-link:hover,
+    .menu-link:focus-visible {
+      text-decoration: underline;
+    }
+
+    h1 { margin: 0 0 8px; letter-spacing: 0.08em; }
+    p { color: var(--text-muted); }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+    .card {
+      padding: 16px;
+      border-radius: var(--radius-soft);
+      background: linear-gradient(150deg, rgba(17, 24, 39, 0.95), rgba(11, 18, 36, 0.9));
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.45);
+    }
+    .tabs { display: flex; gap: 8px; margin-bottom: 10px; }
+    .tab {
+      flex: 1;
+      padding: 8px 10px;
+      text-align: center;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: var(--text-muted);
+      cursor: pointer;
+      background: rgba(148, 163, 184, 0.1);
+    }
+    .tab.active { background: linear-gradient(100deg, var(--accent), var(--accent-2)); color: #0b1224; border-color: transparent; }
+    .toggle-row, .control-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 8px 0; }
+    .toggle {
+      width: 52px;
+      height: 28px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: rgba(148, 163, 184, 0.18);
+      position: relative;
+      cursor: pointer;
+    }
+    .toggle .thumb { position: absolute; top: 2px; left: 2px; width: 24px; height: 24px; border-radius: 50%; background: var(--text-primary); transition: transform 0.2s ease; }
+    .toggle.on { background: linear-gradient(100deg, var(--accent), var(--accent-2)); border-color: transparent; }
+    .toggle.on .thumb { transform: translateX(24px); background: #0b1224; }
+    .radio-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    label.badge { display: inline-flex; gap: 6px; align-items: center; padding: 4px 10px; border-radius: var(--radius-pill); background: rgba(148, 163, 184, 0.12); border: 1px solid rgba(148, 163, 184, 0.35); color: var(--text-muted); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <a class="menu-link" href="menu.html">← Back to demo menu</a>
+  <h1>HTM + Preact Skeleton</h1>
+  <p>JSX-free Preact variant using tagged templates for concise DOM.</p>
+  <div id="app" class="grid"></div>
+
+  <script type="module" src="https://unpkg.com/htm@3.1.1/preact/standalone.module.js"></script>
+  <script type="module">
+    import { html, render, useState } from "https://unpkg.com/htm@3.1.1/preact/standalone.module.js";
+
+    const TabStrip = ({ tab, setTab }) => html`
+      <div class="tabs">
+        ${["Overview", "Fidget", "Telemetry"].map(
+          (name) => html`<div
+            class=${`tab ${tab === name ? "active" : ""}`}
+            onClick=${() => setTab(name)}
+          >${name}</div>`
+        )}
+      </div>
+    `;
+
+    const Toggle = ({ armed, setArmed }) => html`
+      <div class="toggle-row">
+        <span>Power</span>
+        <div
+          class=${`toggle ${armed ? "on" : ""}`}
+          role="switch"
+          aria-checked=${String(armed)}
+          onClick=${() => setArmed(!armed)}
+        >
+          <div class="thumb"></div>
+        </div>
+      </div>
+    `;
+
+    const Radios = ({ radius, setRadius }) => html`
+      <div class="radio-row">
+        ${[
+          { key: "sharp", label: "Sharp" },
+          { key: "soft", label: "Soft" },
+          { key: "pill", label: "Pill" },
+        ].map(
+          (opt) => html`<label class="badge">
+            <input
+              type="radio"
+              name="radius"
+              value=${opt.key}
+              checked=${radius === opt.key}
+              onChange=${() => setRadius(opt.key)}
+            />
+            ${opt.label}
+          </label>`
+        )}
+      </div>
+    `;
+
+    const Card = ({ title, children }) => html`<section class="card"><h2>${title}</h2>${children}</section>`;
+
+    const App = () => {
+      const [tab, setTab] = useState("Overview");
+      const [armed, setArmed] = useState(false);
+      const [radius, setRadius] = useState("soft");
+
+      return html`
+        ${Card({
+          title: "Mode",
+          children: html`<div>${TabStrip({ tab, setTab })}<p>Active tab: ${tab}</p></div>`,
+        })}
+        ${Card({
+          title: "Controls",
+          children: html`<div>${Toggle({ armed, setArmed })}${Radios({ radius, setRadius })}</div>`,
+        })}
+        ${Card({
+          title: "Token Notes",
+          children: html`<div>
+            <div class="control-row">
+              <span>Visibility</span>
+              <span class="badge">Objects on surfaces remain visible</span>
+            </div>
+            <p>HTM templates keep DOM short while CSS variables drive radii and accents.</p>
+            <p><strong>Fallbacks:</strong> heading → body → system; logo → heading; code → monospace.</p>
+          </div>`,
+        })}
+      `;
+    };
+
+    render(html`<${App} />`, document.getElementById("app"));
+  </script>
+</body>
+</html>

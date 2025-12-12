@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skeleton UI - Mithril</title>
+  <style>
+    :root {
+      --surface-base: #0c1021;
+      --surface-raised: #0f172a;
+      --text-primary: #f9fafb;
+      --text-muted: #cbd5e1;
+      --accent: #06b6d4;
+      --accent-2: #eab308;
+      --radius-sharp: 3px;
+      --radius-soft: 12px;
+      --radius-pill: 999px;
+      --font-body: "Inter", system-ui, sans-serif;
+      --font-code: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: var(--font-body);
+      background: radial-gradient(circle at 20% 20%, #0f172a, #0c1021 65%, #05070f 100%);
+      color: var(--text-primary);
+    }
+
+    .menu-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      margin: 0 0 12px;
+      border-radius: var(--radius-soft);
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.42);
+      color: var(--accent-primary);
+      font-weight: 700;
+      text-decoration: none;
+      width: fit-content;
+    }
+
+    .menu-link:hover,
+    .menu-link:focus-visible {
+      text-decoration: underline;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      letter-spacing: 0.08em;
+    }
+
+    p { color: var(--text-muted); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      padding: 14px;
+      background: linear-gradient(150deg, rgba(15, 23, 42, 0.9), rgba(12, 16, 33, 0.9));
+      border-radius: var(--radius-soft);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.45);
+    }
+
+    .tabs { display: flex; gap: 8px; margin-bottom: 10px; }
+    .tab {
+      flex: 1;
+      padding: 8px 10px;
+      text-align: center;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(148, 163, 184, 0.08);
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .tab.active { background: linear-gradient(90deg, var(--accent), var(--accent-2)); color: #0c1021; border-color: transparent; }
+
+    .toggle-row, .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 8px 0;
+      gap: 10px;
+    }
+
+    .toggle {
+      width: 52px;
+      height: 28px;
+      border-radius: var(--radius-pill);
+      background: rgba(148, 163, 184, 0.18);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      position: relative;
+      cursor: pointer;
+    }
+
+    .toggle .thumb {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--text-primary);
+      transition: transform 0.2s ease;
+    }
+
+    .toggle.on { background: linear-gradient(100deg, var(--accent), var(--accent-2)); border-color: transparent; }
+    .toggle.on .thumb { transform: translateX(24px); background: #0c1021; }
+
+    .radio-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    label.badge {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(148, 163, 184, 0.12);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <a class="menu-link" href="menu.html">← Back to demo menu</a>
+  <h1>Mithril Skeleton</h1>
+  <p>Minimal virtual DOM version with tabs, toggles, and radio radius presets.</p>
+  <div id="app" class="grid"></div>
+
+  <script src="https://unpkg.com/mithril/mithril.js"></script>
+  <script>
+    const state = {
+      tab: "Overview",
+      armed: false,
+      radius: "soft",
+    };
+
+    const TabStrip = {
+      view: () =>
+        m(
+          "div.tabs",
+          ["Overview", "Fidget", "Telemetry"].map((name) =>
+            m(
+              "div.tab",
+              {
+                class: state.tab === name ? "tab active" : "tab",
+                onclick: () => (state.tab = name),
+              },
+              name
+            )
+          )
+        ),
+    };
+
+    const Toggle = {
+      view: () =>
+        m("div.toggle-row", [
+          m("span", "Power"),
+          m(
+            "div.toggle",
+            {
+              class: state.armed ? "toggle on" : "toggle",
+              role: "switch",
+              "aria-checked": state.armed,
+              onclick: () => (state.armed = !state.armed),
+            },
+            m("div.thumb")
+          ),
+        ]),
+    };
+
+    const Radios = {
+      view: () =>
+        m(
+          "div.radio-row",
+          [
+            { key: "sharp", label: "Sharp" },
+            { key: "soft", label: "Soft" },
+            { key: "pill", label: "Pill" },
+          ].map((opt) =>
+            m(
+              "label.badge",
+              m("input", {
+                type: "radio",
+                name: "radius",
+                value: opt.key,
+                checked: state.radius === opt.key,
+                onchange: () => (state.radius = opt.key),
+              }),
+              opt.label
+            )
+          )
+        ),
+    };
+
+    const Panel = ({ attrs }) =>
+      m("section.card", [m("h2", attrs.title), attrs.content]);
+
+    const App = {
+      view: () =>
+        [
+          m(Panel, {
+            title: "Mode",
+            content: m("div", [m(TabStrip), m("p", `Active tab: ${state.tab}`)]),
+          }),
+          m(Panel, {
+            title: "Controls",
+            content: m("div", [m(Toggle), m(Radios)]),
+          }),
+          m(Panel, {
+            title: "Token Notes",
+            content: m("div", [
+              m("div.control-row", [
+                m("span", "Visibility"),
+                m("span.badge", "Objects on surfaces remain visible"),
+              ]),
+              m("p", "CSS variables drive the look; sharp vs. pill radii are just token tweaks."),
+              m("p", [m("strong", "Font fallbacks: "), "heading → body → system; code → monospace."]),
+            ]),
+          }),
+        ],
+    };
+
+    m.mount(document.getElementById("app"), App);
+  </script>
+</body>
+</html>

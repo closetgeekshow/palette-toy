@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>new.css Skeleton</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/new.css@1.1.3/new.min.css" />
+  <style>
+    :root {
+      --panel: rgba(7, 11, 24, 0.85);
+      --panel-border: rgba(255, 255, 255, 0.12);
+      --panel-radius: 18px;
+      --accent: #f97316;
+    }
+
+    body {
+      background: radial-gradient(circle at 18% -20%, #1f2937, #020617);
+      color: #e5e7eb;
+      max-width: 1200px;
+      margin: auto;
+      padding: 40px 28px 56px;
+    }
+
+    .menu-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      margin: 0 0 16px;
+      border-radius: var(--panel-radius);
+      background: rgba(17, 24, 39, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      color: var(--accent);
+      font-weight: 700;
+      text-decoration: none;
+      width: fit-content;
+    }
+
+    .menu-link:hover,
+    .menu-link:focus-visible {
+      text-decoration: underline;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--panel-radius);
+      padding: 18px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 6px 10px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #f8fafc;
+      cursor: pointer;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+
+    .chip.is-on {
+      transform: translateY(-1px);
+      box-shadow: 0 0 0 1px var(--accent), 0 12px 28px rgba(0, 0, 0, 0.35);
+    }
+
+    meter { width: 100%; height: 0.6rem; }
+  </style>
+</head>
+<body>
+  <a class="menu-link" href="menu.html">← Back to demo menu</a>
+  <header>
+    <h1>new.css skeleton</h1>
+    <p>Plain HTML feels styled; custom bits only handle gradients, radii, and interactivity.</p>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <h3>Surface visibility</h3>
+      <meter min="0" max="100" low="45" high="70" optimum="85" value="76"></meter>
+      <p>The dark gradient plus a subtle outline keeps cards readable without additional utilities.</p>
+    </section>
+
+    <section class="card">
+      <h3>Accent swaps</h3>
+      <div class="chips" id="newcss-accents">
+        <button class="chip is-on" data-accent="#f97316">Amber</button>
+        <button class="chip" data-accent="#22d3ee">Cyan</button>
+        <button class="chip" data-accent="#a855f7">Purple</button>
+      </div>
+      <p style="color: #cbd5e1;">Only the glow and outlines change; defaults from new.css stay intact.</p>
+    </section>
+
+    <section class="card">
+      <h3>Sharp vs. soft</h3>
+      <label for="newcss-radius">Panel radius</label>
+      <input type="range" id="newcss-radius" min="8" max="26" value="18" />
+      <p>Slide toward 8px for crisp dashboards or keep it lofty for tactile shapes.</p>
+    </section>
+  </div>
+
+  <script>
+    const accentButtons = document.getElementById("newcss-accents");
+    accentButtons.addEventListener("click", (event) => {
+      const chip = event.target.closest("button[data-accent]");
+      if (!chip) return;
+      accentButtons.querySelectorAll(".chip").forEach((c) => c.classList.remove("is-on"));
+      chip.classList.add("is-on");
+      document.documentElement.style.setProperty("--accent", chip.dataset.accent);
+    });
+
+    const radius = document.getElementById("newcss-radius");
+    const updateRadius = (value) => {
+      document.documentElement.style.setProperty("--panel-radius", `${value}px`);
+      document.querySelectorAll(".card").forEach((card) => (card.style.borderRadius = `${value}px`));
+    };
+    radius.addEventListener("input", (event) => updateRadius(event.target.value));
+  </script>
+</body>
+</html>
