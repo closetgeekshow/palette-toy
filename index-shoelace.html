@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shoelace Theme Skeleton</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/dist/themes/dark.css" />
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/shoelace.js"></script>
+  <style>
+    :root {
+      --sl-color-primary-600: #7c3aed;
+      --sl-color-primary-500: #a78bfa;
+      --sl-color-success-600: #22c55e;
+      --sl-color-neutral-0: #0b1220;
+      --sl-border-radius-medium: 14px;
+      --panel-bg: linear-gradient(180deg, #0f172a, #0b1220);
+      --panel-border: rgba(148, 163, 184, 0.35);
+    }
+
+    body {
+      font-family: var(--sl-font-sans);
+      background: radial-gradient(circle at 10% -30%, #1e293b, #020617);
+      color: var(--sl-color-neutral-0-text);
+      margin: 0;
+      padding: 32px;
+      min-height: 100vh;
+      display: grid;
+      gap: 24px;
+    }
+
+    .panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--sl-border-radius-medium);
+      padding: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 1.1rem;
+    }
+
+    p {
+      margin: 0;
+      color: var(--sl-color-neutral-300);
+    }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h1>Shoelace theme tokens</h1>
+    <p>Components lean on CDN themes; overrides tweak primary hue, radius, and gradients without a build step.</p>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <sl-tab-group placement="top" activation="manual">
+        <sl-tab slot="nav" panel="overview" active>Overview</sl-tab>
+        <sl-tab slot="nav" panel="controls">Controls</sl-tab>
+        <sl-tab slot="nav" panel="alerts">Alerts</sl-tab>
+
+        <sl-tab-panel name="overview">
+          <sl-card>
+            <div slot="header">Tokens</div>
+            Primary hue and radius come from <code>--sl-color-primary-*</code> and <code>--sl-border-radius-medium</code>.
+          </sl-card>
+        </sl-tab-panel>
+
+        <sl-tab-panel name="controls">
+          <sl-switch checked>Live sync</sl-switch>
+          <sl-slider label="Glow" value="70"></sl-slider>
+          <sl-checkbox checked>Make sharp</sl-checkbox>
+        </sl-tab-panel>
+
+        <sl-tab-panel name="alerts">
+          <sl-alert variant="success" open>Visibility stays high on every surface.</sl-alert>
+          <sl-alert variant="warning" open>Optional tokens fallback to theme defaults.</sl-alert>
+        </sl-tab-panel>
+      </sl-tab-group>
+    </div>
+
+    <div class="panel">
+      <sl-card>
+        <div slot="header">Buttons</div>
+        <div style="display:flex; gap: var(--sl-spacing-medium); flex-wrap: wrap;">
+          <sl-button variant="primary">Deploy</sl-button>
+          <sl-button variant="default" outline>Pill</sl-button>
+          <sl-button variant="success" pill>Confirm</sl-button>
+        </div>
+        <p slot="footer">Shoelace components inherit the theme overrides without extra CSS.</p>
+      </sl-card>
+    </div>
+  </div>
+</body>
+</html>

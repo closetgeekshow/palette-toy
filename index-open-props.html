@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Open Props Tokenized Skeleton</title>
+  <link rel="stylesheet" href="https://unpkg.com/open-props" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --surface-base: var(--gray-12);
+      --surface-panel: var(--gray-11);
+      --surface-top: var(--gray-10);
+      --border-strong: color-mix(in srgb, var(--gray-6) 70%, transparent);
+      --text-primary: var(--gray-1);
+      --text-muted: var(--gray-5);
+      --accent: var(--indigo-4);
+      --accent-strong: var(--indigo-3);
+      --radius-card: var(--radius-3);
+      --radius-chip: var(--radius-4);
+      --shadow-card: 0 18px 36px rgba(0, 0, 0, 0.35);
+      --shadow-glow: 0 0 0 1px color-mix(in srgb, var(--indigo-4) 60%, transparent),
+        0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: radial-gradient(circle at 20% -20%, var(--indigo-10), var(--surface-base));
+      color: var(--text-primary);
+      margin: 0;
+      padding: var(--size-5);
+      min-height: 100vh;
+      display: grid;
+      gap: var(--size-4);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--size-3);
+    }
+
+    .badge {
+      padding: var(--size-1) var(--size-2);
+      border-radius: var(--radius-pill);
+      background: color-mix(in srgb, var(--accent) 35%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 70%, transparent);
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.75rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: var(--size-3);
+    }
+
+    .panel {
+      background: color-mix(in srgb, var(--surface-panel) 80%, transparent);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      padding: var(--size-4);
+      display: grid;
+      gap: var(--size-3);
+    }
+
+    .panel h2 {
+      margin: 0;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .meter {
+      position: relative;
+      height: var(--size-4);
+      border-radius: var(--radius-pill);
+      background: var(--surface-top);
+      border: 1px solid var(--border-strong);
+      overflow: hidden;
+    }
+
+    .meter span {
+      position: absolute;
+      inset: 0;
+      width: 62%;
+      background: linear-gradient(90deg, var(--accent-strong), var(--accent));
+      box-shadow: var(--shadow-glow);
+    }
+
+    .chips {
+      display: flex;
+      gap: var(--size-2);
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      border-radius: var(--radius-chip);
+      padding: var(--size-2) var(--size-3);
+      background: var(--surface-top);
+      border: 1px solid var(--border-strong);
+      cursor: pointer;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+
+    .chip.is-on {
+      box-shadow: var(--shadow-glow);
+      transform: translateY(-2px);
+    }
+
+    .stack {
+      display: grid;
+      gap: var(--size-2);
+    }
+
+    .note {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="badge">Open Props</div>
+      <h1>Token bridge</h1>
+      <p class="note">Maps the skeleton UI variables onto Open Props colors, radii, and shadows directly from the CDN.</p>
+    </div>
+    <div class="badge">CDN only</div>
+  </header>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Surfaces</h2>
+      <div class="stack">
+        <div class="meter" aria-label="surface visibility meter"><span></span></div>
+        <p class="note">Surface/base/panel tokens reference <code>--gray-*</code> ramps for instant contrast.</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Accents</h2>
+      <div class="stack">
+        <div class="chips" id="accent-chips">
+          <button class="chip" data-accent="indigo">Indigo</button>
+          <button class="chip" data-accent="cyan">Cyan</button>
+          <button class="chip" data-accent="lime">Lime</button>
+        </div>
+        <p class="note">Each chip remaps accent tokens to a different Open Props hue without rebuilding CSS.</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Radii</h2>
+      <div class="chips" id="radius-chips">
+        <button class="chip" data-radius="1">Tight</button>
+        <button class="chip is-on" data-radius="3">Comfort</button>
+        <button class="chip" data-radius="5">Soft</button>
+      </div>
+      <p class="note">Radii and shadows come straight from <code>--radius-n</code> and <code>--shadow-n</code> tokens.</p>
+    </section>
+  </div>
+
+  <script>
+    const hueMap = {
+      indigo: "indigo",
+      cyan: "cyan",
+      lime: "lime"
+    };
+
+    const chipRow = document.getElementById("accent-chips");
+    chipRow.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-accent]");
+      if (!btn) return;
+      chipRow.querySelectorAll(".chip").forEach((chip) => chip.classList.remove("is-on"));
+      btn.classList.add("is-on");
+      const hue = hueMap[btn.dataset.accent] || "indigo";
+      document.documentElement.style.setProperty("--accent", `var(--${hue}-4)`);
+      document.documentElement.style.setProperty("--accent-strong", `var(--${hue}-3)`);
+    });
+
+    const radiusRow = document.getElementById("radius-chips");
+    radiusRow.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-radius]");
+      if (!btn) return;
+      radiusRow.querySelectorAll(".chip").forEach((chip) => chip.classList.remove("is-on"));
+      btn.classList.add("is-on");
+      const radius = btn.dataset.radius || "3";
+      document.documentElement.style.setProperty("--radius-card", `var(--radius-${radius})`);
+      document.documentElement.style.setProperty("--radius-chip", `var(--radius-${Math.max(1, radius - 1)})`);
+    });
+  </script>
+</body>
+</html>
